@@ -431,9 +431,11 @@ PersistenceGeo.Context = Ext.extend(Ext.util.Observable, {
     saveLayerResource : function(resourceId, params, onSuccess, onFailure, scope)  {
         // For tests purposes only, when resourceId is actually received this will be ignored.
         var layerResourceId = 178; 
-        if(typeof(resourceId)!="undefined")  {
-            layerResourceId = resourceId;
+        if(typeof(resourceId)=="undefined" || !resourceId)  {
+            throw new Error("Undefined resourceId");
         }
+
+        layerResourceId = resourceId;
 
         var eScope = window;
         if(typeof(scope)!="undefined") {
