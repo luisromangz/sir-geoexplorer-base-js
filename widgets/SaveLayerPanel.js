@@ -452,30 +452,16 @@ Viewer.widgets.SaveLayerPanel = Ext.extend(Ext.Container, {
      **/
     updateLayer: function (layer){
         var layerToRemove = this.layerRecord.getLayer();
-        if(this.target.mapPanel.map.getLayersByName(layerToRemove.name).length ==  1){
-          layerToRemove = this.target.mapPanel.map.getLayersByName(layerToRemove.name)[0];
-          this.target.mapPanel.map.removeLayer(layerToRemove);
-        }else{
-            var layersCanBeRemoved = this.target.mapPanel.map.getLayersByName(layerToRemove.name);
-            for (var i = 0; i< layersCanBeRemoved.length; i++){
-                if(!!layersCanBeRemoved[i].temporal){
-                    this.target.mapPanel.map.removeLayer(layersCanBeRemoved[i]);
-                }
-            }
-        }
+        this.target.mapPanel.map.removeLayer(layerToRemove);
         this.target.mapPanel.map.addLayer(layer);
     },
 
     onLayerSave: function (layer){
-        if(!!this.layerRecord
-            && !!this.layerRecord.getLayer()){
-            this.layerRecord.getLayer().name = layer.name;
-        }
-
-        if(this.authorized){
-            this.updateLayer(layer);
-            Ext.Msg.alert(this.saveLayerTitleText, String.format(this.saveLayerText, layer.name));
-        }
+        
+        
+        this.updateLayer(layer);
+        Ext.Msg.alert(this.saveLayerTitleText, String.format(this.saveLayerText, layer.name));
+        
 
         if(this.layerType
             == this.KNOWN_TYPES.KML){
