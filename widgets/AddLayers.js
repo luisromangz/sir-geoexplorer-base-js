@@ -80,6 +80,9 @@ Viewer.plugins.AddLayers = Ext.extend(gxp.plugins.AddLayers, {
 
     /** Default prewiev window height **/
     previewHeight: 256,
+
+    /**  If when adding layers the make persist window will be shown **/
+    showPersistWindowOnAdd :false,
     
     /** api: method[addActions]
      */
@@ -482,11 +485,15 @@ Viewer.plugins.AddLayers = Ext.extend(gxp.plugins.AddLayers, {
                         extent.extend(record.getLayer().maxExtent);
                     }
                 }
-                if(this.target.isAuthorized()){
+
+            
+                if(this.showPersistWindowOnAdd && this.target.isAuthorized()){
                     //  mark temp
                     layer.temporal = true;
                     this.showSaveLayerWindow(records[i]);
                 }
+
+
                 // #78426: Set layerSource in layer.source
                 layer.source = source;
                 this.target.mapPanel.map.addLayer(layer);
