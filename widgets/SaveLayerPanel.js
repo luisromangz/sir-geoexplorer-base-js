@@ -424,6 +424,10 @@ Viewer.widgets.SaveLayerPanel = Ext.extend(Ext.Container, {
      */
     submitForm : function() {
 
+        if(!this.items.items[0].form.isValid()){
+            return;
+        }
+
         // Mark as saved
         this.markIsSaved = true;
         
@@ -432,8 +436,13 @@ Viewer.widgets.SaveLayerPanel = Ext.extend(Ext.Container, {
         
         if(!!this.layerRecord
             && !! this.layerRecord.getLayer()){
-            app.persistenceGeoContext.saveLayerResource(
-                this.layerRecord.getLayer().metadata.layerResourceId, params, this.onLayerSave, this.onSaveLayerException,this);
+
+            if(params.type=="WFS") {
+                 app.persistenceGeoContext.saveLayerFromParams(params, this.onLayerSave, this.onSaveLayerException,this);
+            } else {
+                 app.persistenceGeoContext.saveLayerResource(
+                    this.layerRecord.getLayer().metadata.layerResourceId, params, this.onLayerSave, this.onSaveLayerException,this);   
+            }
         }
     },
 
