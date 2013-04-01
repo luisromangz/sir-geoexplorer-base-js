@@ -68,15 +68,17 @@ PersistenceGeo.loaders.WFSLoader
 			};
 
 			this.copyAllPosibleProperties(layerData['properties'], options);
+			var authId = layerData.authId;
 			var layer = new OpenLayers.Layer.Vector(
 					layerData['name'],
 					{
 						'groupLayers' : layerData['groupLayers'],
 						'visibility' : visibility,
 						'strategies' : _strategies,
-						'protocol' : new OpenLayers.Protocol.WFS(options)
+						'protocol' : new OpenLayers.Protocol.WFS(options),
 						// ,
-						// 'renderers' : renderer
+						// 'renderers' : renderer,
+						authId: authId
 					});
 			
 			this.postFunctionsWrapper(layerData, layer, layerTree);
