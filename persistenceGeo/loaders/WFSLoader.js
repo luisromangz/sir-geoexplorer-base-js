@@ -43,6 +43,17 @@ Ext.namespace("PersistenceGeo.loaders.WFSLoader");
 PersistenceGeo.loaders.WFSLoader 
 	= Ext.extend(PersistenceGeo.loaders.AbstractLoader,{
 		load: function (layerData, layerTree){
+			var layerTitle = layerData.layerTitle;
+			if (!layerTitle) {
+	            // if no layerTitle use layer name without workspace
+	            // component
+	            var layerComponents = layerData.name.split(':');
+	            if (layerComponents.length > 1) {
+	                layerTitle = layerComponents[1].replace(/_/g, " ");
+	            } else {
+	                layerTitle = layerData.name;
+	            }
+	        }
 
 			var _strategies = [
 					new OpenLayers.Strategy.BBOX(),
@@ -70,7 +81,7 @@ PersistenceGeo.loaders.WFSLoader
 			this.copyAllPosibleProperties(layerData['properties'], options);
 			var authId = layerData.authId;
 			var layer = new OpenLayers.Layer.Vector(
-					layerData['name'],
+					layerTitle,
 					{
 						'groupLayers' : layerData['groupLayers'],
 						'visibility' : visibility,
