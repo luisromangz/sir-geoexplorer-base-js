@@ -203,6 +203,7 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
             itemId: 'step-3',
             title: "Tipos de elementos disponibles",
             store: this.store,
+            forceFit: true,
             columns: [
                 {
                     header: "Titulo", dataIndex: "title", sortable: true, width: 250
@@ -211,10 +212,10 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
                     header: "Nombre", dataIndex: "name", sortable: true
                 },
                 {
-                    header: "Espacio de nombre", dataIndex: "namespace", sortable: true, width: 150
+                    header: "Espacio de nombre", dataIndex: "namespace", sortable: true, width: 175
                 },
                 {
-                    id: "description", header: "Descripcion", dataIndex: "abstract"
+                    id: "description", header: "Descripción", dataIndex: "abstract"
                 },
                 {
                     header: 'Añadir',
