@@ -136,7 +136,7 @@ Viewer.widgets.SaveLayerPanel = Ext.extend(Ext.Container, {
             // labelWidth : 100,
             // width : 500,
             frame : true,
-            autoHeight : true,
+            height: 115,
             bodyStyle : 'padding: 10px 10px 0 10px;',
             defaultType : 'textfield',
             defaults : {
