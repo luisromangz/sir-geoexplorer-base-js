@@ -63,6 +63,7 @@ Viewer.plugins.AddLayers = Ext.extend(gxp.plugins.AddLayers, {
     uploadKMLText: "Upload a KML",
     uploadRasterText: "Upload a Raster",
     uploadShapeText: "Upload a SHP in a ZIP file",
+    invalidWMSURLText: "Enter a valid URL to a WMS endpoint (e.g. http://example.com/geoserver/wms)",
     
     uploadShpWindow: null,
 
@@ -692,6 +693,7 @@ Viewer.plugins.AddLayers = Ext.extend(gxp.plugins.AddLayers, {
         var newSourceDialog = {
             xtype: "gxp_newsourcedialog",
             header: false,
+            invalidURLText: this.invalidWMSURLText,
             listeners: {
                 "hide": function(cmp) {
                     if (!this.outputTarget) {
