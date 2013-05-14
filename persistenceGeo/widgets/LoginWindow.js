@@ -38,14 +38,14 @@ Ext.namespace("PersistenceGeo.widgets");
  */
 PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
 
+    /** Session and widget parameters and variables **/
+    persistenceGeoContext: null,
     target: null,
-
     defaultRestUrl: "/sig-admin/rest",
-    //defaultRestUrl: "http://localhost:8080/sig-minen/rest",
     loginUrl: "/sig-admin/j_spring_security_check",
     logoutUrl: "/sig-admin/logout",
 
-    title: "Login",
+    /** window config **/
     layout: "fit",
     width: 250,
     height: 170,
@@ -54,6 +54,7 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
     modal: true,
 
     /* i18n */
+    title: "Login",
     backText: "Back",
     nextText: "Next",
     loginText: "Login",
@@ -66,13 +67,9 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
     constructor: function(config) {
         Ext.apply(this, config);
         var url = this.loginUrl;
-        //var url = "../login/";
-        //var url = "/sig-minen/j_spring_security_check";
         console.log("************************ AUTH URL is " + url + "***********************");
         var panel = new Ext.FormPanel({
             url: url,
-            // url: "/sig-minen/j_spring_security_check",
-            // url: "../login/",
             frame: true,
             labelWidth: 60,
             defaultType: "textfield",
@@ -246,6 +243,7 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
         this.clearCookieValue("JSESSIONID");
         this.clearCookieValue(this.cookieParamName);
         this.setAuthorizedRoles([]);
+        // TODO: Handle permission!!!
         // Ext.getCmp('paneltbar').items.each(function(tool) {
         //     if (tool.needsAuthorization === true) {
         //         tool.disable();
@@ -326,9 +324,13 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
 
     // confirm user info loaded
     confirmUserInfo: function(userInfo){
+
          if(!!userInfo && !!userInfo.authorityId){
             // Authority login
             this.authorityLogin(userInfo);
+        }else if(!!userInfo && userInfo.admin){
+            // Authority login
+            this.adminLogin(userInfo);
         }else{
             // Anonymous login
             this.anonymousLogin(userInfo);
@@ -344,6 +346,15 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
             this.target.cancelAuthentication();
     },
 
+    adminLogin: function(userInfo){
+        // show user info on log console.log(userInfo);
+        var roles = new Array();
+        roles.push("ROLE_ADMINISTRATOR");
+        this.userInfo = userInfo;
+        this.setAuthorizedRoles(roles);
+        this.userLogin(userInfo);
+    },
+
     /** Method: authorityLogin 
      * Login for an admin of an authorithy
      **/
@@ -354,6 +365,13 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
         if(userInfo.admin){
             roles.push("ROLE_ADMINISTRATOR");
         }
+        this.userLogin(userInfo);
+    },
+    
+    /** Method: userLogin 
+     * Default login for an user.
+     **/
+    userLogin: function(userInfo){
         this.userInfo = userInfo;
         this.setAuthorizedRoles(roles);
         this.showLogout(userInfo.nombreCompleto);
@@ -376,7 +394,6 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
         this.target.persistenceGeoContext.saveModeActive = this.target.persistenceGeoContext.SAVE_MODES.ANONYMOUS;
         //this.cancelAuthentication();
         this.showLogin();
-        // TODO: Handle permission!!!
     },
 
     /** Method: isAuthorizedIn 
@@ -392,8 +409,6 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
         }
         return authorized;
     },
-
-    persistenceGeoContext: null,
 
     loadPersistenceGeoContext: function (){
         // init context and save layer
