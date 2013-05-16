@@ -130,8 +130,9 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
                 failure: function(form, action) {
                     if (!!action.response.status 
                             && (action.response.status == 200
-                                || action.response.status == 404)){
-                        // debug return action.response.status != 404 || 200
+                                || action.response.status == 404
+                                || action.response.status == 405)){
+                        // debug return action.response.status == 404 || 405 || 200
                         this.postLoginFunction(form, action);
                         this.un("beforedestroy", this.cancelAuthentication, this);
                         this.close();
@@ -236,6 +237,7 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
         if(!!this.target){
             this.target.setAuthorizedRoles(authRoles);
         }
+        this.authorizedRoles = this.target.authorizedRoles;
     },
 
     // confirm logout when logout call is handled
@@ -350,9 +352,7 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
         // show user info on log console.log(userInfo);
         var roles = new Array();
         roles.push("ROLE_ADMINISTRATOR");
-        this.userInfo = userInfo;
-        this.setAuthorizedRoles(roles);
-        this.userLogin(userInfo);
+        this.userLogin(userInfo, roles);
     },
 
     /** Method: authorityLogin 
@@ -361,19 +361,23 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
     authorityLogin: function(userInfo){
         // show user info on log console.log(userInfo);
         var roles = new Array();
-        roles.push(userInfo.authorityId);
+        if(!!userInfo.authorityId){
+            roles.push(userInfo.authorityId);
+        }
         if(userInfo.admin){
             roles.push("ROLE_ADMINISTRATOR");
         }
-        this.userLogin(userInfo);
+        this.userLogin(userInfo, roles);
     },
     
     /** Method: userLogin 
      * Default login for an user.
      **/
-    userLogin: function(userInfo){
+    userLogin: function(userInfo, roles){
         this.userInfo = userInfo;
-        this.setAuthorizedRoles(roles);
+        if(!!roles){
+            this.setAuthorizedRoles(roles);
+        }
         this.showLogout(userInfo.nombreCompleto);
         this.loadPersistenceGeoContext();
         // TODO: Handle permission!!!
@@ -413,7 +417,7 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
     loadPersistenceGeoContext: function (){
         // init context and save layer
         this.target.persistenceGeoContext.userLogin = this.getCookieValue(this.cookieParamName);
-        this.target.persistenceGeoContext.authUser = this.authorizedRoles[0];
+        this.target.persistenceGeoContext.authUser = this.target.authorizedRoles[0];
         this.target.persistenceGeoContext.userInfo = this.userInfo;
         this.target.persistenceGeoContext.activeStore = true;
         this.target.persistenceGeoContext.scope = this;
