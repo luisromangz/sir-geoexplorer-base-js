@@ -30,8 +30,9 @@ Viewer.widgets.InformationToolbar = Ext.extend(Ext.Toolbar, {
 	
 	/** i18n **/
 	tooltipDefaultSearches: "Default Searches",
-	tooltipLengthMeasure: "Length Measure",
-	tooltipAreaMeasure: "Area Measure",
+	tooltipLengthMeasure: "Measure length selection or drawing a polyline",
+	tooltipAreaMeasure: "Measure area drawing or selecting a polygon",
+    tooltipPermiterMeasure:"Measure perimeter drawing or selecting a polygon",
 	tooltipQueryLayer: "Query Layer",
 	tooltipPointInformation: "Point Information",
 	tooltipMetadataLayer: "Show metadata information",
@@ -40,7 +41,8 @@ Viewer.widgets.InformationToolbar = Ext.extend(Ext.Toolbar, {
 
         Ext.apply(this, config);
 
-        this.tools = [];
+        // Needed so the tools are accesible by CustomMeasure's parent ClickableFeatures.
+        this.tools = app.tools;
 
         this.plugins = [{
             ptype: 'gxp_defaultsearches',
@@ -48,17 +50,26 @@ Viewer.widgets.InformationToolbar = Ext.extend(Ext.Toolbar, {
             tooltip: this.tooltipDefaultSearches,
             toggleGroup: 'globalToggle'
         },{
-            ptype: 'gxp_measurelength',
-            lengthMenuText: 'Medir longitud',
-            lengthTooltip: this.tooltipLengthMeasure,
+            ptype: 'gxp_custommeasure',
+            iconCls: "gxp-icon-measure-length",
+            tooltip: this.tooltipLengthMeasure,
             actionTarget: 'informationtbar',
-            toggleGroup: 'globalToggle'
+            toggleGroup: 'globalToggle',
+            measureMode: "LENGTH"
         },{
-            ptype: 'gxp_measurearea',
-            areaMenuText: 'Medir área',
-            areaTooltip: this.tooltipAreaMeasure,
+            ptype: 'gxp_custommeasure',
+            iconCls: "gxp-icon-measure-perimeter",
+            tooltip: this.tooltipPerimeterMeasure,
             actionTarget: 'informationtbar',
-            toggleGroup: 'globalToggle'
+            toggleGroup: 'globalToggle',
+            measureMode: "PERIMETER"
+        },{
+            ptype: 'gxp_custommeasure',
+            iconCls: "gxp-icon-measure-area",
+            tooltip: this.tooltipAreaMeasure,
+            actionTarget: 'informationtbar',
+            toggleGroup: 'globalToggle',
+            measureMode: "AREA"
         },{
             ptype: "vw_queryform",
             featureManager: "querymanager",
