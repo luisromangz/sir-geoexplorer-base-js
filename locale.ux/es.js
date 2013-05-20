@@ -380,9 +380,9 @@ GeoExt.Lang.add(
     	/* B\u00fasquedas predeterminadas */
     	tooltipDefaultSearches: "Abre un cuadro de di\u00e1logo en el que se permiten realizar b\u00fasquedas predetermindas",
     	/* Medir longitud */
-    	tooltipLengthMeasure: "Permite dibujar una l\u00ednea en el mapa, de la que se mostrar\u00e1 su longitud",
+    	tooltipLengthMeasure: "Permite obtener la longitud de  una l\u00ednea en el mapa, selecionándola o dibujándola",
     	/* Medir \u00e1rea */
-    	tooltipAreaMeasure: "Permite dibujar un pol\u00edgono en el mapa, del que se mostrr\u00e1 su \u00e1rea",
+    	tooltipAreaMeasure: "Permite obtener el área de un polígono, selecionándolo o dibujándolo",
         /* Consultar la capa seleccionada */
     	tooltipQueryLayer: "Permite realizar una consulta sobre la capa seleccionada",
         /* Consultar coordenadas */
@@ -665,6 +665,22 @@ GeoExt.Lang.add(
         addServerTitleText: "A\u00F1de el servidor para la sesi\u00f3n actual",
         cancelTitleText: "Cierra la ventana sin a\u00F1adir el servidor",
         sourceNameTitleText: "Nombre"
+    },
+
+	"gxp.plugins.CustomMeasure.prototype" : {
+        drawInMapText: "Medir dibujando en el mapa",
+        selectFeatureText: "Seleccionar elemento a medir",
+        numberFormat: "0.000,00/i",
+        drawPopupTooltips: {
+            "AREA": "Área del polígono dibujado:",
+            "LENGTH": "Longitud de la polilínea dibujada:",
+            "PERIMETER": "Perímetro del polígono dibujado:"
+        },
+        selectionPopupTooltips: {
+            "AREA": "Área del polígono seleccionado:",
+            "LENGTH": "Longitud de la polilínea seleccionada:",
+            "PERIMETER": "Perímetro del polígono seleccionado:"
+        }
     }
 
 });
