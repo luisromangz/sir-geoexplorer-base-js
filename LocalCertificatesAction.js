@@ -117,7 +117,7 @@ gxp.plugins.LocalCertificatesAction = Ext.extend(gxp.plugins.Tool, {
                     scope: this
                 }),
                 new Ext.menu.Item({
-                    iconCls: "vw-icon-localcertificate-mapselection-action",
+                    iconCls: "vw-icon-mapselection",
                     text: this.selectInMapText,
                     handler: this._selectInMapHandler,
                     scope: this
