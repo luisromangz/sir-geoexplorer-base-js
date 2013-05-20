@@ -1045,11 +1045,13 @@ Viewer.plugins.AddLayers = Ext.extend(gxp.plugins.AddLayers, {
                 var name = null;
                 var url = null;
                 var wmsSourceId = record.get('id');
+                storedSourceSelected = null;
                 for(var i = 0; i< this.storedSources.data.length; i++){
                     if(this.selectedSource.url == this.storedSources.data.get(i).get('url')){
                         id = this.storedSources.data.get(i).get('id');
                         name = this.storedSources.data.get(i).get('title');
                         url = this.storedSources.data.get(i).get('url');
+                        storedSourceSelected = this.storedSources.data.get(i);
                         break;
                     }  
                 }
@@ -1058,7 +1060,8 @@ Viewer.plugins.AddLayers = Ext.extend(gxp.plugins.AddLayers, {
                     name: name,
                     url: url, 
                     wmsSourceId: wmsSourceId, 
-                    deleteableRecord: record
+                    deleteableRecord: record,
+                    storedSourceSelected: storedSourceSelected
                 };
                 if(!!id && !!name){
                     deleteButton.setDisabled(false);
@@ -1084,6 +1087,7 @@ Viewer.plugins.AddLayers = Ext.extend(gxp.plugins.AddLayers, {
             method: 'POST',    
             success: function(response) {
                 this.sourceComboBox.store.remove(this._deleteButtonConfig.deleteableRecord);
+                this.storedSources.remove(this._deleteButtonConfig.storedSourceSelected);
                 this.sourceComboBox.onSelect(this.sourceComboBox.store.getAt(0), 0);
             }, 
             failure: function(response) { 
