@@ -37,6 +37,9 @@ Ext.namespace("PersistenceGeo.widgets");
  * 
  */
 PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
+    
+    /** ptype **/
+    ptype: "pgeo_loginwindow",
 
     /** Session and widget parameters and variables **/
     persistenceGeoContext: null,
@@ -52,6 +55,7 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
     plain: true,
     border: false,
     modal: true,
+    closeAction: 'hide',
 
     /* i18n */
     title: "Login",
@@ -67,6 +71,7 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
     constructor: function(config) {
         Ext.apply(this, config);
         var url = this.loginUrl;
+
         console.log("************************ AUTH URL is " + url + "***********************");
         var panel = new Ext.FormPanel({
             url: url,
@@ -245,12 +250,7 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
         this.clearCookieValue("JSESSIONID");
         this.clearCookieValue(this.cookieParamName);
         this.setAuthorizedRoles([]);
-        // TODO: Handle permission!!!
-        // Ext.getCmp('paneltbar').items.each(function(tool) {
-        //     if (tool.needsAuthorization === true) {
-        //         tool.disable();
-        //     }
-        // });
+        this.handlePermissions();
         this.closePersistenceGeoContext();
         this.showLogin();
     },
@@ -373,6 +373,7 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
         }
         this.showLogout(userInfo.nombreCompleto);
         this.loadPersistenceGeoContext();
+        this.handlePermissions();
         // TODO: Handle permission!!!
     },
 
@@ -389,7 +390,7 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
             scope: this.target
         });
         this.target.persistenceGeoContext.saveModeActive = this.target.persistenceGeoContext.SAVE_MODES.ANONYMOUS;
-        //this.cancelAuthentication();
+        this.handlePermissions();
         this.showLogin();
     },
 
@@ -462,6 +463,16 @@ PersistenceGeo.widgets.LoginWindow = Ext.extend(Ext.Window,{
             };
             this.on("authorizationchange", this._authFn, this, {single: true});
         }
+    },
+
+    /** private: method[handlePermissions]
+     *  Handle user permissions.
+     */
+    handlePermissions: function(){
+        new PersistenceGeo.permissions.PermissionHandler({
+            target: this.target,
+            userInfo: this.userInfo
+        }).handlePermissions();
     }
 
 });
