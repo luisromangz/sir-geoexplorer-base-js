@@ -38,23 +38,23 @@
 /**
  * api: (extends) plugins/Tool.js
  */
-Ext.namespace("Viewer.plugins");
+Ext.namespace('Viewer.plugins');
 
 /**
  * api: constructor .. class:: ExportToKML(config)
- * 
+ *
  * Plugin for exporting a selected layer to kml file. TODO Make this plural -
  * selected layers
  */
 Viewer.plugins.ExportToKML = Ext.extend(gxp.plugins.Tool, {
-    
+
     /** api: ptype = vw_exporttokml */
-    ptype: "vw_exporttokml",
-    exportToKMLText: "Export to KML",
-    exportToKMLTooltipText: "Export a layer to kml file",
-    exportToKMLMsg: "Generating KML File ...",
-    exportToKMLErrorTitle: "Error",
-    exportToKMLErrorContent: "Error to export the layer",
+    ptype: 'vw_exporttokml',
+    exportToKMLText: 'Export to KML',
+    exportToKMLTooltipText: 'Export a layer to kml file',
+    exportToKMLMsg: 'Generating KML File ...',
+    exportToKMLErrorTitle: 'Error',
+    exportToKMLErrorContent: 'Error to export the layer',
     objectOwner: 'map',
     selectedLayer: null,
 
@@ -65,59 +65,59 @@ Viewer.plugins.ExportToKML = Ext.extend(gxp.plugins.Tool, {
     init: function(target) {
         Viewer.plugins.ExportToKML.superclass.init.apply(this, arguments);
         this.target.on('beforerender', this.addActions, this);
-        
+
     },
-    
+
     /** api: method[addActions] */
     addActions: function() {
-        
-        
+
+
         var actions = PersistenceGeo.tree.MakeLayerPersistent.superclass.addActions.apply(this, [{
             menuText: this.exportToKMLText,
-            iconCls: "gxp-icon-export-kml",
+            iconCls: 'gxp-icon-export-kml',
             disabled: true,
             tooltip: this.exportToKMLTooltipText,
             handler: function() {
                 var urlToExport = null;
                 var paramsToExport = null;
-                var urlLocalGeoServer = app.sources.local.url.replace("/ows", "");
-                if(this.selectedLayer && this.selectedLayer.url){
-                    if(this.selectedLayer.url.indexOf(urlLocalGeoServer) != -1){
+                var urlLocalGeoServer = app.sources.local.url.replace('/ows', '');
+                if (this.selectedLayer && this.selectedLayer.url) {
+                    if (this.selectedLayer.url.indexOf(urlLocalGeoServer) != -1) {
                         urlToExport = urlLocalGeoServer;
                     }
                 }
                 var contextLayer = null;
-                if(this.selectedLayer.params && this.selectedLayer.params.LAYERS){
-                    if(this.selectedLayer.params.LAYERS.indexOf(":") != -1){
-                        contextLayer = this.selectedLayer.params.LAYERS.split(":")[0];
+                if (this.selectedLayer.params && this.selectedLayer.params.LAYERS) {
+                    if (this.selectedLayer.params.LAYERS.indexOf(':') != -1) {
+                        contextLayer = this.selectedLayer.params.LAYERS.split(':')[0];
                     }
                 }
-                if(contextLayer != null){
-                    urlToExport += "/" + contextLayer + "/wms/kml";
+                if (contextLayer != null) {
+                    urlToExport += '/' + contextLayer + '/wms/kml';
                 }
 
                 paramsToExport = {
                     'layers': this.selectedLayer.params.LAYERS,
                     'DOWNLOAD': true,
-                    'FILENAME': this.selectedLayer.params.LAYERS + ".kml"
+                    'FILENAME': this.selectedLayer.params.LAYERS + '.kml'
                 };
 
                 Ext.MessageBox.wait(this.exportToKMLMsg);
-                
+
                 Ext.Ajax.request({
                     url: urlToExport,
                     params: paramsToExport,
                     method: 'GET',
                     disableCaching: false,
-                    success: function(o, r, n){
-                        var elemIF = document.createElement("iframe");
+                    success: function(o, r, n) {
+                        var elemIF = document.createElement('iframe');
                         elemIF.src = app.proxy + encodeURIComponent(this.prepareUrlToDownload(r));
-                        elemIF.style.display = "none";
+                        elemIF.style.display = 'none';
                         document.body.appendChild(elemIF);
                         Ext.MessageBox.updateProgress(1);
                         Ext.MessageBox.hide();
                     },
-                    failure: function(o, r, n){
+                    failure: function(o, r, n) {
                         Ext.MessageBox.updateProgress(1);
                         Ext.MessageBox.hide();
                         Ext.Msg.show({
@@ -131,46 +131,46 @@ Viewer.plugins.ExportToKML = Ext.extend(gxp.plugins.Tool, {
             },
             scope: this
         }]);
-        
+
         var owner = this.target;
         if (this.objectOwner === 'toolbar') {
             owner = app;
         }
 
-        owner.on("layerselectionchange", function(record) {
-            if(record && record.data){
+        owner.on('layerselectionchange', function(record) {
+            if (record && record.data) {
                 this.selectedLayer = record.data.layer;
-                
+
                // if(this.objectOwner === 'toolbar') {
                     this.enableOrDisableAction();
                 //}
             }
         }, this);
-        
+
         this.enableOrDisableAction();
     },
 
-    prepareUrlToDownload: function(data){
+    prepareUrlToDownload: function(data) {
         var urlToReturn = null;
-        if(data != null){
+        if (data != null) {
             urlToReturn = data.url;
-            if(data.params!=null){
+            if (data.params != null) {
                 var first = true;
-                for(p in data.params){
+                for (p in data.params) {
                     if (first) {
                         first = false;
-                        urlToReturn += "?";
+                        urlToReturn += '?';
                     } else {
-                        urlToReturn += "&";
+                        urlToReturn += '&';
                     }
-                    urlToReturn += p + "=" + data.params[p];
+                    urlToReturn += p + '=' + data.params[p];
                 }
             }
         }
         return urlToReturn;
     },
     isLocalGeoserver: function(url) {
-        var urlLocalGeoServer = app.sources.local.url.replace("/ows", "");
+        var urlLocalGeoServer = app.sources.local.url.replace('/ows', '');
         if (url && url.indexOf(urlLocalGeoServer) != -1) {
             return true;
         } else {
@@ -178,7 +178,7 @@ Viewer.plugins.ExportToKML = Ext.extend(gxp.plugins.Tool, {
         }
     },
     enableOrDisableAction: function() {
-        if(!this.selectedLayer) {
+        if (!this.selectedLayer) {
             this.selectedLayer = Viewer.getSelectedLayer();
         }
         if (this.selectedLayer && this.isLocalGeoserver(this.selectedLayer.url)) {
@@ -187,14 +187,14 @@ Viewer.plugins.ExportToKML = Ext.extend(gxp.plugins.Tool, {
                     }, this);
         } else {
             Ext.each(this.actions, function(item) {
-               item.disable(); 
-            }, this);        
+               item.disable();
+            }, this);
         }
-        
+
     }
-    
-    
-    
+
+
+
 });
 
 Ext.preg(Viewer.plugins.ExportToKML.prototype.ptype, Viewer.plugins.ExportToKML);
