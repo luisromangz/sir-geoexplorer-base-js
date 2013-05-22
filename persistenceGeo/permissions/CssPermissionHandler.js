@@ -56,19 +56,25 @@ PersistenceGeo.permissions.CssPermissionHandler = Ext.extend(PersistenceGeo.perm
     },
 
     showHideButtonTool: function(tool, hide){
-        var iconCls = null;
+        var iconCls = [];
         if(tool.iconCls){
-            iconCls = tool.iconCls;
-        }else if(tool.actions 
-            && tool.actions[0]
-            && tool.actions[0].initialConfig
-            && tool.actions[0].initialConfig.iconCls){
-            iconCls = tool.actions[0].initialConfig.iconCls;
+            iconCls[0] = tool.iconCls;
         }
-        if(iconCls){
-            var buttons = $("."+iconCls);
-            for(var i = 0; i <buttons.length; i++){
-               this.showHideButton(buttons[i], hide);
+        if(tool.actions 
+            && tool.actions.length > 0){
+            for (var i = 0; i< tool.actions.length; i++){
+                if(!!tool.actions[i].initialConfig
+                    && tool.actions[i].initialConfig.iconCls){
+                    iconCls[iconCls.length] = tool.actions[i].initialConfig.iconCls;
+                }
+            }
+        }
+        if(iconCls.length>0){
+            for (var iconIndex = 0; iconIndex< iconCls.length; iconIndex++){
+                var buttons = $("."+iconCls[iconIndex]);
+                for(var i = 0; i <buttons.length; i++){
+                   this.showHideButton(buttons[i], hide);
+                }
             }
         }
     },
