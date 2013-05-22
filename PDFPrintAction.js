@@ -46,16 +46,16 @@ Ext.namespace("gxp.plugins");
  *    Provides an action for showing channel selector dialog.
  */
 gxp.plugins.PDFPrintAction = Ext.extend(gxp.plugins.Tool, {
-    
+
     /** api: ptype = gxp_extendedtoolbar */
     ptype: "gxp_pdfprint",
-    
+
     /** i18n * */
     /** api: config[buttonText]
      *  ``String`` Text to show button
      */
     buttonText: 'Print',
-     
+
     /** api: config[menuText]
      *  ``String``
      *  Text for show in menu item (i18n).
@@ -63,20 +63,20 @@ gxp.plugins.PDFPrintAction = Ext.extend(gxp.plugins.Tool, {
     menuText: 'Print',
     errorText:"An error was found. Please try again later.",
 
-   
+
     /** api: config[tooltip]
      *  ``String``
      *  Text for channel tool tooltip (i18n).
      */
     tooltip: 'Print',
-    
+
     /** private: property[iconCls]
      */
     iconCls: 'gxp-icon-print',
 
     /** public: property[toggleGroup]*/
     toggleGroup: null,
-    
+
     /** private: method[constructor]
      */
     constructor: function(config) {
