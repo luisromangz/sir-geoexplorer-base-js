@@ -46,9 +46,16 @@ PersistenceGeo.tree.LayerOpacitySlider = Ext.extend(gxp.plugins.Tool, {
     /** api: ptype = pgeo_layeropacityslider */
     ptype: "pgeo_layeropacityslider",
 
+    /** i18n **/
     opacityText: "Opacity",
     opacityTooltipText: "Opacity",
     opacityWindowText: "Layer {0} opacity",
+
+    /** api: config[checkUserInfo]
+     *  ``Boolean``
+     *  Check user logged info to active this tool
+     */
+    checkUserInfo: false,
 
     /**
      * private: method[init] :arg target: ``Object`` The object initializing
@@ -66,13 +73,12 @@ PersistenceGeo.tree.LayerOpacitySlider = Ext.extend(gxp.plugins.Tool, {
 
         var actions = PersistenceGeo.tree.LayerOpacitySlider.superclass.addActions.apply(this, [{
                 menuText: this.opacityText,
-                iconCls: "gxp-opacity-slider",
+                iconCls: "gxp-icon-palette pgeo-layer-opacity-slider",
                 disabled: false,
                 tooltip: this.opacityTooltipText,
                 handler: function() {
                     var record = this._selectedLayer;
                     if (record) {
-                        //this.checkIfStyleable(record);
                         this.showWindow(record);
                     }
                 },
@@ -84,7 +90,7 @@ PersistenceGeo.tree.LayerOpacitySlider = Ext.extend(gxp.plugins.Tool, {
 
         this.target.on("layerselectionchange", function(record) {
             this._selectedLayer = record;
-            this.checkIfStyleable(record);
+            this.checkIfEnable(record);
         }, this);
         var enforceOne = function(store) {
             if(!!this.launchAction){
@@ -126,79 +132,38 @@ PersistenceGeo.tree.LayerOpacitySlider = Ext.extend(gxp.plugins.Tool, {
         windowToShow.show();
     },
 
-    /** private: method[checkIfStyleable]
+    /** private: method[checkIfEnable]
      *  :arg layerRec: ``GeoExt.data.LayerRecord``
-     *  :arg describeRec: ``Ext.data.Record`` Record from a 
-     *      `GeoExt.data.DescribeLayerStore``.
      *
-     *  Given a layer record and the corresponding describe layer record, 
-     *  determine if the target layer can be styled.  If so, enable the launch 
-     *  action.
+     *  Enable this.launchAction if the layer don't be management by 
+     *  the user logged or disable this.launchAction otherwise if this.checkUserInfo flag is active
      */
-    checkIfStyleable: function(layerRec, describeRec) {
-        if (describeRec) {
-            var owsTypes = ["WFS"];
-            if (this.rasterStyling === true) {
-                owsTypes.push("WCS");
+    checkIfEnable: function(record) {
+
+        var disable = true;
+        
+        if(!!record){
+            var layer = record.getLayer();
+            var userInfo = app.persistenceGeoContext.userInfo;
+            disable = false;
+            
+            if(layer.isBaseLayer){
+                disable = true;
             }
-        }
-        if (describeRec ? owsTypes.indexOf(describeRec.get("owsType")) !== -1 : !this.requireDescribeLayer) {
-            var editableStyles = false;
-            var source = this.target.getSource(layerRec); // #78426 modify getSource() in composer
-            var url;
-            // TODO: revisit this
-            var restUrl = layerRec.get("restUrl");
-            if (restUrl) {
-                url = restUrl + "/styles";
-            } else if(source){
-                url = source.url.split("?")
-                    .shift().replace(/\/(wms|ows)\/?$/, "/rest/styles");
-            }else{
-                url = layerRec.getLayer().url.split("?")
-                    .shift().replace(/\/(wms|ows)\/?$/, "/rest/styles");
-            }
-            if (this.sameOriginStyling) {
-                // this could be made more robust
-                // for now, only style for sources with relative url
-                editableStyles = url.charAt(0) === "/";
-                // and assume that local sources are GeoServer instances with
-                // styling capabilities
-                if (this.target.authenticate && editableStyles) {
-                    // we'll do on-demand authentication when the button is
-                    // pressed.
-                    this.launchAction.enable();
-                    return;
-                }
-            } else {
-                editableStyles = true;
-            }
-            if (editableStyles) {
-                if (this.target.isAuthorized()) {
-                    // check if service is available
-                    this.disableActionIfAvailable(url);
+            if(!disable && this.checkUserInfo){
+                if(!!layer.groupID){
+                    // Authority layers
+                    var isAdministrable = userInfo.authorityId == layer.groupID;
+                    disable = isAdministrable;
+                } else if(!!layer.layerID){ 
+                    // Public layers
+                    var isAdministrable = userInfo.admin;
+                    disable = isAdministrable;
                 }
             }
         }
-    },
-    
-    /** private: method[enableActionIfAvailable]
-     *  :arg url: ``String`` URL of style service
-     * 
-     *  Enable the launch action if the service is available.
-     */
-    disableActionIfAvailable: function(url) {
-        // ovewrite url with app.proxy
-        if(url.indexOf(app.proxy) < 0){
-            url = app.proxy + url;
-        }
-        Ext.Ajax.request({
-            method: "PUT",
-            url: url,
-            callback: function(options, success, response) {
-                this.launchAction.setDisabled(response.status === 200); // 200 proxy!!
-            },
-            scope: this
-        });
+
+        this.launchAction.setDisabled(disable); 
     }
 
 });
