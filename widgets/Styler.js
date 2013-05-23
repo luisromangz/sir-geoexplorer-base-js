@@ -68,6 +68,7 @@ Viewer.plugins.Styler = Ext.extend(gxp.plugins.Styler, {
     actionHandler: function(){
         //Not need always!!
         //this.target.doAuthorized(this.roles, this.addOutput, this);
+        this.addOutput();
     },
     
     /** private: method[handleLayerChange]
@@ -110,7 +111,24 @@ Viewer.plugins.Styler = Ext.extend(gxp.plugins.Styler, {
                 disable = true;
             }
             if(!disable && this.checkUserInfo){
-                disable = !app.persistenceGeoContext.isOwner(layer);
+                disable = !app.persistenceGeoContext.isOwner(layer) 
+                || (layer.metadata.layerTypeId != 7) /*
+                * only postgis layers:
+                    sir-admin_db=> select * from gis_layer_type;
+                     id |    name     |   tipo    
+                    ----+-------------+-----------
+                      1 | WMS         | Raster
+                      2 | WFS         | Raster
+                      3 | KML         | Raster
+                      4 | WMS         | Vectorial
+                      5 | WFS         | Vectorial
+                      6 | KML         | Vectorial
+                      7 | postgis     | Vectorial
+                      8 | geotiff     | Raster
+                      9 | imagemosaic | Raster
+                     10 | imageworld  | Raster
+                */
+                ;
             }
         }
 
@@ -199,8 +217,7 @@ Viewer.plugins.Styler = Ext.extend(gxp.plugins.Styler, {
         var record = this.target.selectedLayer;
 
         var origCfg = this.initialConfig.outputConfig || {};
-        this.outputConfig.title = origCfg.title ||
-            this.menuText + ": " + record.get("title");
+        this.outputConfig.title = this.menuText + ": " + record.get("title");
         this.outputConfig.shortTitle = record.get("title");
 
         record = this.repairRecord(record);
