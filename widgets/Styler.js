@@ -35,6 +35,90 @@ Viewer.plugins.Styler = Ext.extend(gxp.plugins.Styler, {
 
     id: 'styler_component',
 
+    /** api: config[checkUserInfo]
+     *  ``Boolean``
+     *  Check user logged info to active this tool
+     */
+    checkUserInfo: true,
+    
+    /** api: method[addActions]
+     */
+    addActions: function() {
+        var layerProperties;
+        var actions = gxp.plugins.Styler.superclass.addActions.apply(this, [{
+            menuText: this.menuText,
+            iconCls: "gxp-icon-palette",
+            disabled: true,
+            tooltip: this.tooltip,
+            handler: function() {
+                this.actionHandler();
+            },
+            scope: this
+        }]);
+        
+        this.launchAction = actions[0];
+        this.target.on({
+            layerselectionchange: this.handleLayerChange,
+            scope: this
+        });
+        
+        return actions;
+    },
+
+    actionHandler: function(){
+        //Not need always!!
+        //this.target.doAuthorized(this.roles, this.addOutput, this);
+    },
+    
+    /** private: method[handleLayerChange]
+     *  :arg record: ``GeoExt.data.LayerRecord``
+     *
+     *  Handle changes to the target viewer's selected layer.
+     */
+    handleLayerChange: function(record) {
+        // first check if is disabled!!
+        if(!this.checkIfDisable(record)){
+            Viewer.plugins.Styler.superclass.handleLayerChange.apply(this, arguments);
+            // #83263: Seems not be effect otherwise
+            setTimeout(function(){
+                app.tools.styler.launchAction.setDisabled(false);
+            }, 1);
+        }else{
+            // #83263: Seems not be effect otherwise
+            setTimeout(function(){
+                app.tools.styler.launchAction.setDisabled(true);
+            }, 1);
+        }
+    },
+
+    /** private: method[checkIfDisable]
+     *  :arg layerRec: ``GeoExt.data.LayerRecord``
+     *
+     *  Enable this.launchAction if the layer can be management by 
+     *  the user logged or disable this.launchAction otherwise (if this.checkUserInfo flag is active)
+     */
+    checkIfDisable: function(record) {
+
+        var disable = true;
+        
+        if(!!record){
+            var layer = record.getLayer();
+            var userInfo = app.persistenceGeoContext.userInfo;
+            disable = false;
+            
+            if(layer.isBaseLayer){
+                disable = true;
+            }
+            if(!disable && this.checkUserInfo){
+                disable = !app.persistenceGeoContext.isOwner(layer);
+            }
+        }
+
+        this.launchAction.setDisabled(disable); 
+
+        return disable;
+    },
+
     /** private: method[checkIfStyleable]
      *  :arg layerRec: ``GeoExt.data.LayerRecord``
      *  :arg describeRec: ``Ext.data.Record`` Record from a 
@@ -45,43 +129,46 @@ Viewer.plugins.Styler = Ext.extend(gxp.plugins.Styler, {
      *  action.
      */
     checkIfStyleable: function(layerRec, describeRec) {
-        if (describeRec) {
-            var owsTypes = ["WFS"];
-            if (this.rasterStyling === true) {
-                owsTypes.push("WCS");
-            }
-        }
-        if (describeRec ? owsTypes.indexOf(describeRec.get("owsType")) !== -1 : !this.requireDescribeLayer) {
-            var editableStyles = false;
-            var source = this.target.getSource(layerRec); // #78426 modify getSource() in composer
-            var url;
-            // TODO: revisit this
-            var restUrl = layerRec.get("restUrl");
-            if (restUrl) {
-                url = restUrl + "/styles";
-            } else {
-                url = source.url.split("?")
-                    .shift().replace(/\/(wms|ows)\/?$/, "/rest/styles");
-            }
-            if (this.sameOriginStyling) {
-                // this could be made more robust
-                // for now, only style for sources with relative url
-                editableStyles = url.charAt(0) === "/";
-                // and assume that local sources are GeoServer instances with
-                // styling capabilities
-                if (this.target.authenticate && editableStyles) {
-                    // we'll do on-demand authentication when the button is
-                    // pressed.
-                    this.launchAction.enable();
-                    return;
+        // first check if is disabled!!
+        if(!this.checkIfDisable(record)){
+            if (describeRec) {
+                var owsTypes = ["WFS"];
+                if (this.rasterStyling === true) {
+                    owsTypes.push("WCS");
                 }
-            } else {
-                editableStyles = true;
             }
-            if (editableStyles) {
-                if (this.target.isAuthorized()) {
-                    // check if service is available
-                    this.enableActionIfAvailable(url);
+            if (describeRec ? owsTypes.indexOf(describeRec.get("owsType")) !== -1 : !this.requireDescribeLayer) {
+                var editableStyles = false;
+                var source = this.target.getSource(layerRec); // #78426 modify getSource() in composer
+                var url;
+                // TODO: revisit this
+                var restUrl = layerRec.get("restUrl");
+                if (restUrl) {
+                    url = restUrl + "/styles";
+                } else {
+                    url = source.url.split("?")
+                        .shift().replace(/\/(wms|ows)\/?$/, "/rest/styles");
+                }
+                if (this.sameOriginStyling) {
+                    // this could be made more robust
+                    // for now, only style for sources with relative url
+                    editableStyles = url.charAt(0) === "/";
+                    // and assume that local sources are GeoServer instances with
+                    // styling capabilities
+                    if (this.target.authenticate && editableStyles) {
+                        // we'll do on-demand authentication when the button is
+                        // pressed.
+                        this.launchAction.enable();
+                        return;
+                    }
+                } else {
+                    editableStyles = true;
+                }
+                if (editableStyles) {
+                    if (this.target.isAuthorized()) {
+                        // check if service is available
+                        this.enableActionIfAvailable(url);
+                    }
                 }
             }
         }
