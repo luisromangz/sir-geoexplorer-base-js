@@ -111,9 +111,8 @@ Viewer.plugins.Styler = Ext.extend(gxp.plugins.Styler, {
                 disable = true;
             }
             if(!disable && this.checkUserInfo){
-                disable = !app.persistenceGeoContext.isOwner(layer) 
-                || (layer.metadata.layerTypeId != 7) /*
-                * only postgis layers:
+                /*
+                 * only postgis layers for no admin users:
                     sir-admin_db=> select * from gis_layer_type;
                      id |    name     |   tipo    
                     ----+-------------+-----------
@@ -128,7 +127,12 @@ Viewer.plugins.Styler = Ext.extend(gxp.plugins.Styler, {
                       9 | imagemosaic | Raster
                      10 | imageworld  | Raster
                 */
-                ;
+                disable = !app.persistenceGeoContext.isOwner(layer) 
+                    || (userInfo.admin 
+                        && (layer.metadata.layerTypeId != 7         // postgis layers
+                            && layer.metadata.layerTypeId != 4))    // WMS layers
+                    || (!userInfo.admin 
+                        && (layer.metadata.layerTypeId != 7));      // postgis layers
             }
         }
 
