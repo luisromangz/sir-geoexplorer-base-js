@@ -686,6 +686,11 @@ GeoExt.Lang.add(
         saveErrorText: "Error al salvar: ",
         loginUserErrorTitleText: 'Error de login!',
         loginUserErrorText: 'Usuario \'{0}\' desconocido.\n Por favor, compruebe su contrase\u00f1a o consulte con el administrador'
+    },
+
+    'Viewer.plugins.FichaInversion.prototype' : {
+        waitText: "Por favor, espere...",
+        errorText: "Ocurrió un error, pruebe de nuevo en unos instantes."
     }
 
 });
