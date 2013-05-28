@@ -67,13 +67,18 @@ gxp.plugins.LocalCertificatesAction = Ext.extend(gxp.plugins.Tool, {
     selectPropertyInMapText: 'Select a property in the map, please.',
     errorText: 'An error happened, please try again in a few moments.',
     waitText: 'Please wait...',
+    footerLine1Text: 'Gobierno Regional Región Del Libertador General Bernardo O\'Higgins',
+    footerLine2Text: 'Plaza de Los Héroes s/n. Rancagua. Fono (72)2-205900 - Fax (72)2-237148',
+
+
+
 
 
     /** api: config[tooltip]
      *  ``String``
      *  Text for channel tool tooltip (i18n).
      */
-    tooltip: 'Certificados municipales',
+    tooltip: 'Local Certificates',
 
     /** private: property[iconCls]
      */
@@ -570,7 +575,7 @@ gxp.plugins.LocalCertificatesAction = Ext.extend(gxp.plugins.Tool, {
             newFont: {
                 size: 9
             },
-            text: 'NOMBRE DEL CERTIFICADO (AÚN NO DEFINIDO)',
+            text: 'CERTIFICADO MUNICIPAL',
             align: 'C',
             dy: 3
         }, {
@@ -578,7 +583,7 @@ gxp.plugins.LocalCertificatesAction = Ext.extend(gxp.plugins.Tool, {
                 style: ''
             },
             dy: 7,
-            text: 'NOMBRE DEL DEPTO RESPONSABLE DE ESTA INFORMACIÓN (MUNICIPIO LO DEBE DEFINIR)'
+            text: ''
         }, {
             newFont: {
                 style: 'B'
@@ -652,12 +657,12 @@ gxp.plugins.LocalCertificatesAction = Ext.extend(gxp.plugins.Tool, {
                 size: 7,
                 style: 'B'
             },
-            text: 'AQUÍ DEBIERAN IR LOS DATOS DE CONTACTO DEL MUNCIPIO (DEPTO/FONO/CORREO/ETC)',
+            text: this.footerLine1Text,
             align: 'C',
             x: margin,
             dy: 7
         }, {
-            text: 'ADEMÁS DE DATOS DE LA PLATAFORMA DEL SIR',
+            text: this.footerLine2Text,
             align: 'C',
             dy: 1
         }];
