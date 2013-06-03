@@ -166,9 +166,6 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
         }, {
             ptype: "gxp_pancontrol"
         }, {
-            ptype: 'vw_graticuletool',
-            iconCls: 'vw-icon-graticule-tool'
-        }, {
             ptype: 'gxp_extendedtoolbar',
             buttonText: 'Información',
             menuText: 'Información',
@@ -249,8 +246,6 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
             id: "featuremanager",
             maxFeatures: 20,
             paging: false
-        }, {
-            actions: ['->']
         }];
 
         /**
@@ -384,7 +379,11 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
         });
 
         // TODO: Need the correct base layer for the Overview map
-        this.mapPanel.map.addControls([
+        this.mapPanel.map.addControls(this.getAditionalControls());
+    },
+
+    getAditionalControls: function(){
+        return [
             new OpenLayers.Control.CustomOverviewMap({
                 viewFixed: true,
                 fixedZoomLevel: 2,
@@ -393,15 +392,15 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
                         "http://vmap0.tiles.osgeo.org/wms/vmap0", {
                         layers: "basic"
                     })]
-            }),
+            })
+            ,
             new OpenLayers.Control.CustomMousePosition({
                 emptyString: '',
                 displayProjection: Viewer.GEO_PROJECTION,
                 utmDisplayProjection: Viewer.UTM_PROJECTION
             })
-        ]);
+        ];
     },
-
 
     /** private: method[authenticate]
      * Show the login dialog for the user to login. Delegated to this.loginWindow.
