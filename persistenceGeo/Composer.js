@@ -255,15 +255,7 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
             actions: ["loginbutton", "toggleheader"]
         }];
 
-        if(!config.tools){
-            config.tools = this.defaultTools;
-        }else{
-            var newTools = this.defaultTools;
-            for(var i = 0 ; i< config.tools.length ; i++){
-                newTools.push(config.tools[i]);
-            }
-            config.tools = newTools;
-        }
+        config.tools = this.obtainFinalTools(config);        
 
         // write this.defaultLastTools
         for(var i = 0 ; i< this.defaultLastTools.length ; i++){
@@ -287,12 +279,61 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
         PersistenceGeo.Composer.superclass.constructor.apply(this, arguments);
     },
 
+    /** private: method[finalTools]
+     *  Obtain final tools to be used in composer. 
+     *  If you want to force overwrite config you must return a simple array in this method.
+     */
+    finalTools: function (config){
+        var newTools = this.defaultTools;
+        if(!!config.tools){
+            for(var i = 0 ; i< config.tools.length ; i++){
+                if(!config.tools[i].behind){
+                    newTools.push(config.tools[i]);
+                }else{
+                    newTools = this.reOrderConfig(config.tools[i], newTools);
+                }
+            }
+        }
+        return newTools;
+    },
+
+    /** private: method[reOrderConfig]
+     *  Reorder tools config with 'behind' config
+     */
+    reOrderConfig: function (newTool, newTools){
+        var beforeConfig = newTool.behind;
+        var newToolIndex = newTools.length;
+        for(var i = 0 ; i< newTools.length ; i++){
+            var found = true;
+            for(var key in beforeConfig){
+                if(beforeConfig[key] != newTools[i][key]){
+                    found = false;
+                }
+            }
+            if(found){
+                newToolIndex = i;
+                break;
+            }
+        }
+        var previousTool = newTool;
+        delete previousTool.behind; // not used in final config.
+        for(;newToolIndex < newTools.length ; newToolIndex++){
+            var tmpPreviousTool = newTools[newToolIndex];
+            newTools[newToolIndex] = previousTool;
+            previousTool = tmpPreviousTool;
+        }
+        newTools[newToolIndex] = previousTool;
+        return newTools;
+    },
+
     /** private: method[changeBaseLayerProperty]
      *  Change baseLayers property of layers with a name contained
      * in this.baseLayers array.
      */
     changeBaseLayerProperty: function(config) {
         try {
+            // console.log("setting base layer");
+            // console.log(config);
             // Add isBaseLayer property
             var baseLayerindex = $.inArray(config.layer.name, this.baseLayers);
             if (baseLayerindex > -1) {
@@ -315,11 +356,15 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
      */
     changeBaseLayer: function(config) {
         try {
+            // console.log("changing base layer");
+            // console.log(config);
             var baseLayerindex = $.inArray(config.layer.name, this.baseLayers);
             if (baseLayerindex == -1) {
                 // when GeoExplorer try to set another baseLayer
                 var selectedBaseLayer = this._lastSelectedBaseLayer || config.object.getLayersByName(this.baseLayers[0])[0];
-                if (!!selectedBaseLayer) {
+                if (!!selectedBaseLayer 
+                        // && this._lastSelectedBaseLayer !== selectedBaseLayer
+                    ) {
                     // set base layer
                     config.object.setBaseLayer(selectedBaseLayer);
                 }
