@@ -255,7 +255,7 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
             actions: ["loginbutton", "toggleheader"]
         }];
 
-        config.tools = this.obtainFinalTools(config);        
+        config.tools = this.finalTools(config);        
 
         // write this.defaultLastTools
         for(var i = 0 ; i< this.defaultLastTools.length ; i++){
