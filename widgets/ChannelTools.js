@@ -80,10 +80,10 @@ Viewer.dialog.ChannelTools = Ext.extend(Ext.Window, {
     },
 
     onBeforeRender: function () {
-        this.layersTree = new Viewer.widgets.ChannelToolsLayersTree({
+        this.layersTree = new PersistenceGeo.widgets.FolderTreePanel({
             restBaseUrl: this.restBaseUrl,
-            showLayers: this.showLayers,
-            showZones: this.showZones,
+            recursive: this.showLayers,
+            folderType: null,
             listeners: {
                 click: this.onTreeNodeClick,
                 scope: this

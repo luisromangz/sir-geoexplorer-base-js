@@ -85,8 +85,21 @@ Viewer.dialog.PlanificationToolsLayersWindow = Ext.extend(Ext.Window, {
         var padding = 'padding: 10px 16px;';
         var border = 'border: 0px solid transparent;'
         
-        this.layersTree = new Viewer.widgets.PlanificationToolsLayersTree({
+        // this.layersTree = new Viewer.widgets.PlanificationToolsLayersTree({
+        //     restBaseUrl: this.restBaseUrl,
+        //     listeners: {
+        //         checkchange: this.onTreeNodeCheckChanged,
+        //         scope: this
+        //     }
+        // });
+
+        this.layersTree = new PersistenceGeo.widgets.FolderTreePanel({
             restBaseUrl: this.restBaseUrl,
+            recursive: true,
+            folderType: PersistenceGeo.widgets.FolderTreePanel.prototype.KNOWN_FOLDER_TYPES.IPT_TYPE,
+            rootNodeText: this.title,
+            showVirtualFolder: false,
+            showNodeTypes: true,
             listeners: {
                 checkchange: this.onTreeNodeCheckChanged,
                 scope: this
