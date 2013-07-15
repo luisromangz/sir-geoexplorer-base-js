@@ -218,14 +218,8 @@ PersistenceGeo.widgets.FolderTreePanel = Ext.extend(Ext.tree.TreePanel, {
                 for(el in jsonObject){
                     if(!!jsonObject[el].id && !!jsonObject[el].type){
 
-                      instrType = jsonObject[el].type;
-                      //Special description
-                      if (instrType=='PRI'){
-                         instrType='Planos Reguladores Intercomunales (PRI)';
-                      }
-                     if (instrType=='PRC'){
-                         instrType='Planos Reguladores Comunales (PRC)';
-                      }
+                      instrType = jsonObject[el].title || jsonObject[el].type;
+                      
                       var item = new Ext.tree.AsyncTreeNode({                                    
                             id: 'node-' + jsonObject[el].type,
                             text: instrType,
