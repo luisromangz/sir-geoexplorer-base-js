@@ -194,7 +194,8 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
             menuText: 'Exportar',
             tooltip: 'Exportar',
             iconCls: 'vw-icon-importexport-toolbar',
-            toolbar: 'ImportExportToolbar'
+            toolbar: 'ImportExportToolbar',
+            needsInit: false
         },{
             ptype: 'vw_wmsgetfeatureinfo',
             format: 'grid',
