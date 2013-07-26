@@ -49,6 +49,8 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
     loginUrl: "/sig-minen/j_spring_security_check",
     logoutUrl: "/sig-minen/logout",
     adminUrl: '../../controlUsuarioLogado',
+    pdfFooterText: "",
+    logoDataUri: "",
 
     /** 
      * Base layers names: May be the same than defined in composer.html!!
@@ -150,7 +152,8 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
             showButtonText: false,
             actionTarget: "map.tbar",
             toggleGroup: "globalToggle",
-            pdfLogoUri: "http://sig.minenergia.cl/sig-minen/moduloCartografico/theme/app/img/logo_ministerio.png"
+            pdfFooterText: this.pdfFooterText,
+            pdfLogoUri: this.logoDataUri
         }, {
             ptype: "gxp_zoomtoinitialvalues",
             id: "zoomToInitialValues"
