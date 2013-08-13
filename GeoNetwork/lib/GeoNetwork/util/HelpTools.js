@@ -125,6 +125,7 @@ GeoNetwork.util.HelpTools = {
      * 
      */
     get: function (helpId, schema, url, cb) {
+
         var info = helpId.split('|'), 
              requestBody = '<request><element schema="' + schema + 
                                 '" name="' + info[1] + 
@@ -133,8 +134,15 @@ GeoNetwork.util.HelpTools = {
                                 '" isoType="' + info[4] + '" /></request>';
         schema = schema || info[0].split('.')[1] || 'iso19139'; // Fallback to iso19139 if schema undefined
 
+
+        var requestUrl = url;
+        if(app.proxy){
+            requestUrl = requestUrl.replace(app.proxy, "");
+            requestUrl = requestUrl.replace(app.proxy.replace("..", ""), "");
+        }
+
         OpenLayers.Request.POST({
-            url: url,
+            url: requestUrl,
             data: requestBody,
             success: function(response){
                 var el = response.responseXML.getElementsByTagName('element');

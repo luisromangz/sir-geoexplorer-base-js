@@ -89,6 +89,10 @@ GeoNetwork.editor.HelpPanel = Ext.extend(Ext.Panel, {
      */
     initComponent: function(){
         Ext.applyIf(this, this.defaultConfig);
+
+        // if(this.initialConfig){
+        //     Ext.applyIf(this, this.initialConfig);            
+        // }
         
         this.tipTpl = new Ext.XTemplate(GeoNetwork.util.HelpTools.Templates.COMPLETE);
 

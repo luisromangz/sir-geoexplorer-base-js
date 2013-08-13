@@ -46,7 +46,7 @@ var catalogue = null;
  * TODO: Improve this management
  */
 function initGNManager(){
-    var lang = 'es';
+    var lang = 'spa';
 
     // Config for WGS84 based maps
     GeoNetwork.map.PROJECTION = "EPSG:900913";

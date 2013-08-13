@@ -54,6 +54,10 @@ PersistenceGeo.widgets.GeoNetworkMetadataInsertTool = Ext.extend(gxp.plugins.Too
     insertWindowText: "Layer {0} metadata insert",
     inserticonCls: '',
 
+    /** Window size **/
+    windowWidth: 800,
+    windowHeight: 600,
+
     /** api: config[checkUserInfo]
      *  ``Boolean``
      *  Check user logged info to active this tool
@@ -131,8 +135,8 @@ PersistenceGeo.widgets.GeoNetworkMetadataInsertTool = Ext.extend(gxp.plugins.Too
             
             newMetadataWindow = new Ext.Window({
                 title:  String.format(this.insertWindowText, layer.name),
-                width: 600,
-                height: 420,
+                width: this.windowWidth,
+                height: this.windowHeight,
                 layout: 'fit',
                 modal: true,
                 items: newMetadataPanel,
