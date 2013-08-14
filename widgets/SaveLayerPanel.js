@@ -44,7 +44,7 @@ Viewer.widgets.SaveLayerPanel = Ext.extend(Ext.Container, {
      *  Display a border around the panel.  Defaults to ``false``.
      */
     border: false,
-    style: "padding: 10px",
+    style: "padding: 10px 10px 0",
     editable: false,
     saveLayerToUser: false,
 
@@ -64,7 +64,7 @@ Viewer.widgets.SaveLayerPanel = Ext.extend(Ext.Container, {
     layerLoadedText : 'Layer {0} has been loaded',
     inProjectionText : "File projection",
     loadText : "Load",
-    saveLayerTitleText: "Added layer", 
+    saveLayerTitleText: "Added layer",
     saveLayerText: "Layer '{0}' has been added permanently to viewer.",
     saveLayerErrorTitleText: "Error ocurred!!",
     saveLayerErrorText: "An error ocurred saving '{0}' layer",
@@ -136,7 +136,7 @@ Viewer.widgets.SaveLayerPanel = Ext.extend(Ext.Container, {
             // labelWidth : 100,
             // width : 500,
             frame : true,
-            height: 115,
+            autoHeight: true,
             bodyStyle : 'padding: 10px 10px 0 10px;',
             defaultType : 'textfield',
             defaults : {
