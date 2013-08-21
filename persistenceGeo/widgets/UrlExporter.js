@@ -112,7 +112,9 @@ PersistenceGeo.widgets.UrlExporter = Ext.extend(gxp.plugins.Tool, {
             width: 0,
             height: 0,
             css: 'display:none;visibility:hidden;height:0;',
-            src: requestUrl
+            // Fixes #85836 by using the non-proxied url to download the file as the proxy breaks the download of non persisted layers,
+            // Returning 0b files..., but working ok in persisted ones. Restore the proxied url if #87063 ever gets fixed.
+            src: proxiedUrl
         });
     },
 
@@ -146,11 +148,11 @@ PersistenceGeo.widgets.UrlExporter = Ext.extend(gxp.plugins.Tool, {
 
     prepareUrlToDownload: function(data) {
         var urlToReturn = null;
-        if (data != null) {
+        if (data !== null) {
             urlToReturn = data.url;
-            if (data.params != null) {
+            if (data.params !== null) {
                 var first = true;
-                for (p in data.params) {
+                for (var p in data.params) {
                     if (first) {
                         first = false;
                         urlToReturn += '?';
@@ -188,6 +190,16 @@ PersistenceGeo.widgets.UrlExporter = Ext.extend(gxp.plugins.Tool, {
             }, this);
         }
 
+    },
+
+    getFileName: function (extension) {
+        var fileName = this.selectedLayer.layerTitle;
+        if(!fileName) {
+            fileName = this.selectedLayer.name;
+        }
+        
+        return  fileName + '.' + extension;
     }
+
 
 });
