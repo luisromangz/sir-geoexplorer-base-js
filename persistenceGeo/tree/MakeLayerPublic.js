@@ -24,6 +24,9 @@
  * Authors: Alejandro Diaz Torres (mailto:adiaz@emergya.com)
  */
 
+/**
+ * @required  persistenceGeo/widgets/GeoNetworkTool.js
+ */
 
 /** api: (define)
  *  module = PersistenceGeo.tree
@@ -37,7 +40,7 @@ Ext.namespace("PersistenceGeo.tree");
  * Make a layer public. See #87022
  * 
  */
-PersistenceGeo.widgets.MakeLayerPublic = Ext.extend(gxp.plugins.Tool, {
+PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.widgets.GeoNetworkTool, {
 
     /** api: ptype = pgeo_makelayerpublic */
     ptype: "pgeo_makelayerpublic",
@@ -53,64 +56,14 @@ PersistenceGeo.widgets.MakeLayerPublic = Ext.extend(gxp.plugins.Tool, {
     formNameFieldValueText: "Name of the layer",
     formTemplateFieldText: "Template",
     formTemplateFieldValueText: "ISO 19119",
+    metadataWindowText: "Metadata for layer {0} publish request",
+    targetWindowTitleText: "Target folder/layer"
 
-    /** Window size **/
+    /** Window sizes **/
     windowWidth: 400,
     windowHeight: 200,
-
-    /** api: config[checkUserInfo]
-     *  ``Boolean``
-     *  Check user logged info to active this tool
-     */
-    checkUserInfo: false,
-
-    /**
-     * private: method[init] :arg target: ``Object`` The object initializing
-     * this plugin.
-     */
-    init: function(target) {
-        PersistenceGeo.widgets.MakeLayerPublic.superclass.init.apply(this, arguments);
-        this.target.on('beforerender', this.addActions, this);
-
-    },
-
-    /** api: method[addActions]
-     */
-    addActions: function() {     
-
-        var actions = PersistenceGeo.widgets.MakeLayerPublic.superclass.addActions.apply(this, [{
-                menuText: this.toolText,
-                iconCls: this.toolIconCls,
-                disabled: false,
-                tooltip: this.toolTooltipText,
-                handler: function() {
-                    var record = this._selectedLayer;
-                    if (record) {
-                        this.showWindow(record);
-                    }
-                },
-                scope: this
-            }
-        ]); 
-
-        this.launchAction = actions[0];
-
-        this.target.on("layerselectionchange", function(record) {
-            this._selectedLayer = record;
-            this.checkIfEnable(record);
-        }, this);
-        var enforceOne = function(store) {
-            if(!!this.launchAction){
-                this.launchAction.setDisabled(!this._selectedLayer || store.getCount() <= 1);
-            }
-        };
-        this.target.mapPanel.layers.on({
-            "add": enforceOne,
-            "remove": enforceOne
-        });
-
-        return actions;
-    },
+    metadataWindowWidth: 800,
+    metadataWindowHeight: 600,
 
     /**
      * private: method[showWindow]
@@ -119,24 +72,100 @@ PersistenceGeo.widgets.MakeLayerPublic = Ext.extend(gxp.plugins.Tool, {
     showWindow: function(layerRecord) {
         var layer = layerRecord.getLayer();
 
-        var publicLayerWindow;
+        // Create and show windows
+        var publishRequestWindow = this.getPublishRequestWindow(layerRecord);
+        var metadataWindow = this.getMetadataWindow(layerRecord);
+        var targetWindow = this.getTargetWindow(layerRecord);
+        publishRequestWindow.show();
+        metadataWindow.show();
+        targetWindow.show();
+
+        // Position of the windows
+        var position = publishRequestWindow.getPosition();
+        var offset = publishRequestWindow.getWidth() + 20;
+        var offsetY = (this.metadataWindowHeight - this.windowHeight) / 2;
+        publishRequestWindow.setPosition(position[0] - this.windowWidth, position[1]);
+        metadataWindow.setPosition(position[0] - this.windowWidth + offset, position[1] - offsetY);
+    },
+
+    /**
+     * private: method[getPublishRequestWindow]
+     * Obtain publish request window
+     */
+    getPublishRequestWindow: function(layerRecord) {
+        var layer = layerRecord.getLayer();
+
         // Create a window to choose the template and the group
-        if (!publicLayerWindow) {
+        if (!this.publishRequestWindow) {
             
-            publicLayerWindow = new Ext.Window({
+            this.publishRequestWindow = new Ext.Window({
                 title:  String.format(this.toolWindowText, layer.name),
                 width: this.windowWidth,
                 height: this.windowHeight,
                 layout: 'fit',
-                modal: true,
+                modal: false,
                 items: this.getPanel(),
                 closeAction: 'hide',
-                constrain: true,
-                iconCls: 'addIcon'
+                constrain: true
             });
         }
-        publicLayerWindow.show();
+
+        return this.publishRequestWindow;
     },
+
+    /**
+     * private: method[getMetadataWindow]
+     * Obtain metadata window
+     */
+    getMetadataWindow: function(layerRecord) {
+        var layer = layerRecord.getLayer();
+
+        // Create a window to choose the template and the group
+        if (!this.newMetadataWindow) {
+            var newMetadataPanel = new GeoNetwork.editor.NewMetadataPanel({
+                        getGroupUrl: catalogue.services.getGroups,
+                        catalogue: catalogue
+                    });
+            
+            this.newMetadataWindow = new Ext.Window({
+                title:  String.format(this.metadataWindowText, layer.name),
+                width: this.metadataWindowWidth,
+                height: this.metadataWindowHeight,
+                layout: 'fit',
+                modal: false,
+                items: newMetadataPanel,
+                closeAction: 'hide',
+                constrain: true
+            });
+        }
+
+        return this.newMetadataWindow;
+    },
+
+    /**
+     * private: method[getTargetWindow]
+     * Obtain folder tree panel window to select a layer
+     */
+    getTargetWindow: function(layerRecord) {
+        var layer = layerRecord.getLayer();
+
+        // Create a window to choose the template and the group
+        if (!this.targetWindow) {
+            var mapPanel = Viewer.getMapPanel();
+            this.targetWindow = new Viewer.dialog.ChannelTools({
+                mapPanel: mapPanel,
+                title: this.targetWindowTitleText,
+                map: mapPanel.map,
+                showLayers: true,
+                modal: false,
+                persistenceGeoContext: this.target.persistenceGeoContext,
+                cls: 'additional-layers-window'
+            });
+        }
+
+        return this.targetWindow;
+    },
+
 
     /**
      * private: method[getPanel]
@@ -180,24 +209,12 @@ PersistenceGeo.widgets.MakeLayerPublic = Ext.extend(gxp.plugins.Tool, {
             labelWidth: 50,
             bodyStyle: "padding: 15px",
             autoWidth: true,
-            autoHeight: true
+            height: 400
         });
 
         return this.form;
-    },
-
-    /** private: method[checkIfEnable]
-     *  :arg layerRec: ``GeoExt.data.LayerRecord``
-     *
-     *  TODO: enable or disable with user and layer info
-     */
-    checkIfEnable: function(record) {
-
-        var disable = false;
-
-        this.launchAction.setDisabled(disable); 
     }
 
 });
 
-Ext.preg(PersistenceGeo.widgets.MakeLayerPublic.prototype.ptype, PersistenceGeo.widgets.MakeLayerPublic);
+Ext.preg(PersistenceGeo.tree.MakeLayerPublic.prototype.ptype, PersistenceGeo.tree.MakeLayerPublic);

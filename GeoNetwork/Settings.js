@@ -13,6 +13,10 @@ var GN_URL = '/proxy/?url=http://localhost/geonetwork';
 
 GeoNetwork.Settings = {};
 
+// Display in layer switcher options 
+// @see GeoNetwork/MetadataResultsView.js
+GeoNetwork.Settings.displayResultsInLayerSwitcher = false;
+
 GeoNetwork.Util.defaultLocale = 'es';
 // Restrict locales to a subset of languages
 //GeoNetwork.Util.locales = [
