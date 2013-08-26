@@ -117,6 +117,12 @@ PersistenceGeo.widgets.FolderTreePanel = Ext.extend(Ext.tree.TreePanel, {
      */
     rootVisible: false,
 
+    /** api: config[nodeTypesFilter]
+     *  ``Object``
+     *  Only show this types of nodes
+     */
+    nodeTypesAllowed: null,
+
     /* Array of items to be refresh in panel reload */
     itemsArray: [],
 
@@ -157,13 +163,18 @@ PersistenceGeo.widgets.FolderTreePanel = Ext.extend(Ext.tree.TreePanel, {
                             if(nodeIsLeaf) {
                                 id+=10000000;
                             }
-                            node.appendChild(new Ext.tree.AsyncTreeNode({                                    
-                                id: id,
-                                text: this.parseNodeTitle(json.data[i].text),
-                                leaf: nodeIsLeaf || !this.recursive,
-                                type: json.data[i].type,
-                                data: json.data[i].data
-                            }));
+                            // Filter by node types
+                            var append = !this.nodeTypesAllowed || 
+                                (this.nodeTypesAllowed && this.nodeTypesAllowed[json.data[i].type]);
+                            if(append){
+                                node.appendChild(new Ext.tree.AsyncTreeNode({                                    
+                                    id: id,
+                                    text: this.parseNodeTitle(json.data[i].text),
+                                    leaf: nodeIsLeaf || !this.recursive,
+                                    type: json.data[i].type,
+                                    data: json.data[i].data
+                                }));
+                            }
                         }
                     },
                     scope: this
