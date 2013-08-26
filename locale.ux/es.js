@@ -546,7 +546,15 @@ GeoExt.Lang.add(
     },
 
     'Viewer.dialog.DefaultSearches.prototype': {
-        titleTool: 'Búsquedas Predeterminadas'
+        titleTool: 'Búsquedas Predeterminadas',
+        layerTitle: 'Resultado de la búsqueda',
+        provinceFieldLabel: 'Provincia',
+        provinceFieldPrompt:  'Seleccione una provincia',
+        municipalityFieldLabel: 'Comunas',
+        municipalityFieldPrompt:  'Seleccione una provincia primero',
+        coordinatesSectionLabel: 'Coordenadas',
+        searchBtnLabel: 'Buscar',
+        adminstrativeLimitsSectionLabel: 'Límites Administrativos',
     },
 
     'gxp.FeatureEditPopup.prototype': {
@@ -738,8 +746,8 @@ GeoExt.Lang.add(
         userFieldText: "Usuario",
         passwordFieldText: "Contras\u00f1a", 
         saveErrorText: "Error al salvar: ",
-        loginUserErrorTitleText: 'Error de login!',
-        loginUserErrorText: 'Usuario \'{0}\' desconocido.\n Por favor, compruebe su contrase\u00f1a o consulte con el administrador'
+        loginUserErrorTitleText: 'Error de login',
+        loginUserErrorText: '<b>¡Usuario o contraseña incorrectas!</b><br><br>Por favor, inténtelo de nuevo con otros datos de acceso o consulte con el adminsitrador.'
     },
 
     'Viewer.plugins.FichaInversion.prototype' : {
