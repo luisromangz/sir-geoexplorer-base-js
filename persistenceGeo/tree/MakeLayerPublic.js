@@ -57,7 +57,7 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.widgets.GeoNetwo
     formTemplateFieldText: "Template",
     formTemplateFieldValueText: "ISO 19119",
     metadataWindowText: "Metadata for layer {0} publish request",
-    targetWindowTitleText: "Target folder/layer"
+    targetWindowTitleText: "Target folder/layer",
 
     /** Window sizes **/
     windowWidth: 400,
