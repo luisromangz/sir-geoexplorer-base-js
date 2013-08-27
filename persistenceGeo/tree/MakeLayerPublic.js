@@ -98,6 +98,49 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.widgets.GeoNetwo
     activeAction: null,
 
     /**
+     * private: property[jsonData]
+     * ``Object`` map with the form data
+     */
+    jsonData: null,
+
+    /** private: method[constructor]
+     *  Contructor method.
+     */
+    constructor: function (config) {
+
+        // Call superclass constructor
+        PersistenceGeo.tree.MakeLayerPublic.superclass.constructor.call(this, config);
+
+        // Add default callbacks
+        this.on({
+            validate: this.validateForm,
+            obtaindata: this.obtainCommonData,
+            scope: this
+        });
+
+         // add any custom application events
+        this.addEvents(
+            /** api: event[obtaindata]
+             *  Obtain multi window form data 
+             *
+             *  Returns:
+             *
+             *  Json data
+             */
+            "obtaindata",
+
+            /** api: event[validate]
+             *  Validate multi window form data
+             *
+             *  Returns:
+             *
+             *  True if the form data is valid or false otherwise
+             */
+            "validate"
+        );
+    },
+
+    /**
 
      * api: method[showWindow]
      * Show all windows of this component.
@@ -204,6 +247,7 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.widgets.GeoNetwo
             modal: false,
             items: newMetadataPanel,
             closeAction: 'hide',
+            controller: this,
             constrain: true
         });
         this.newMetadataWindow.on({
@@ -234,6 +278,7 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.widgets.GeoNetwo
             height: this.metadataWindowHeight - this.windowHeight - 20,
             modal: false,
             onlyFolders: !showLayers,
+            leafAsCheckbox: false,
             persistenceGeoContext: this.target.persistenceGeoContext,
             cls: 'additional-layers-window'
         });
@@ -254,12 +299,11 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.widgets.GeoNetwo
      * Method called when one target has been selected on tree folder window
      */
     onTargetSelected: function(node, clicked){
-
-        if(this.activeAction == this.KNOWN_ACTIONS.NEW_LAYER){
+        if(this.activeAction == this.KNOWN_ACTIONS.NEW_LAYER
+            || node.leaf){
+            this.selectedTargetId = node.id;
+            this.selectedTargetName = node.text;   
         }
-        console.log("here");
-        this.selectedTargetId = node.id;
-        this.selectedTargetName = node.text;
     },
 
     /**
@@ -314,22 +358,115 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.widgets.GeoNetwo
      */
     updateActionValue: function(radio, checked){
         this.activeAction = radio.getValue().inputValue;
+        this.selectedTargetId = null;
+        this.selectedTargetName = null;   
+        if(this.targetWindow){
+            this.closing= true;
+            this.targetWindow.close();
+            this.closing= false;
+        }
         if(this.activeAction == this.KNOWN_ACTIONS.NEW_LAYER){
-            if(this.targetWindow){
-                this.closing= true;
-                this.targetWindow.close();
-                this.closing= false;
-            }
             this.getTargetWindow(this.layerSelected, false).show();
         }else{
             // this.activeAction == this.KNOWN_ACTIONS.UPDATE_LAYER
-            if(this.targetWindow){
-                this.closing= true;
-                this.targetWindow.close();
-                this.closing= false;
-            }
             this.getTargetWindow(this.layerSelected, true).show();
         }
+    },
+
+    /** api: method[validateForm]
+     *  Validate multi window form data
+     *
+     *  Returns:
+     *
+     *  True if the form data is valid or false otherwise
+     */
+    validateForm: function(){
+        return this.layerSelected && this.selectedTargetId && this.selectedTargetName 
+            && this.nameField && this.nameField.getValue() && this.activeAction 
+            && (this.KNOWN_ACTIONS.NEW_LAYER == this.activeAction 
+                || this.KNOWN_ACTIONS.UPDATE_LAYER == this.activeAction);
+    }, 
+
+    defaultCountry: 'España',
+    
+    /** private: method[obtainCommonData]
+     *  Obtain multi window form data 
+     */
+    obtainCommonData: function(){
+        // Init
+        var layerUrl = this.layerSelected.getLayer().url;
+        this.jsonData = {
+            // common data
+            layerSelected: this.layerSelected,
+            selectedTargetId: this.selectedTargetId,
+            selectedTargetName: this.selectedTargetName,
+            name: this.nameField.getValue(),
+            activeAction: this.activeAction,
+            // Data to ovewrite metedata form @see PersistenceGeo.widgets.GeoNetworkEditorPanel
+            formData:{
+                // title for th layer
+                title: this.nameField.getValue(),
+                // Contact info
+                contact_name: this.target.persistenceGeoContext.userInfo.nombreCompleto,
+                contact_group: this.target.persistenceGeoContext.userInfo.authority,
+                contact_phone: this.target.persistenceGeoContext.userInfo.telefono,
+                contact_mail: this.target.persistenceGeoContext.userInfo.email,
+                contact_country: this.defaultCountry,
+                // Online info
+                online_url: layerUrl
+            }
+        };
+        return this.getJsonData();
+    },
+
+    /** api: method[getJsonData]
+     *  Obtain multi window form data 
+     *
+     *  Returns:
+     *
+     *  Json data
+     */
+    getJsonData: function(){
+        return this.jsonData;
+    },
+
+    /** api: method[metadataEdit]
+     *  :param uuid: ``String`` Uuid of the metadata record to edit
+     *
+     *  Open a metadata editor.
+     */
+    metadataEdit: function(metadataId, create, group, child){
+        var jsonData = this.obtainCommonData();
+        this.closeAll();
+
+        Ext.getCmp('metadata-panel') && Ext.getCmp('metadata-panel').destroy();
+
+        var editorPanel = new PersistenceGeo.widgets.GeoNetworkEditorPanel({
+            defaultViewMode : GeoNetwork.Settings.editor.defaultViewMode,
+            catalogue : catalogue,
+            selectionPanelImgPath: GN_URL + '/apps/js/ext-ux/images',
+            controller: this,
+            layout : 'border',
+            xlinkOptions : {
+                CONTACT : true
+            }
+        });
+        
+        var mapPanelSize = this.target.mapPanel.getSize();
+
+        var editorWindow = new Ext.Window({
+            title: "Metadata editor", items:[editorPanel],
+            closeAction: 'close',
+            width: mapPanelSize.width,
+            height: mapPanelSize.height
+        });
+
+        editorWindow.show();
+        editorPanel.init(metadataId, create, group, child);
+        editorPanel.doLayout(false);
+
+        //editorPanel.initWithController(this);
+
     }
 
 });

@@ -106,6 +106,12 @@ PersistenceGeo.widgets.FolderTreeWindow = Ext.extend(Ext.Window, {
      */
     onlyFolders: null,
 
+    /** api: config[leafAsCheckbox]
+     *  ``Boolean``
+     *  Draw leaf nodes as a checkbox. Default it's true.
+     */
+    leafAsCheckbox: true,
+
     /** private: method[constructor]
      *  Contructor method.
      */
@@ -170,13 +176,13 @@ PersistenceGeo.widgets.FolderTreeWindow = Ext.extend(Ext.Window, {
                 null,
             nodeTypesAllowed: nodeTypesFilter,
             showVirtualFolder: this.showLayers,
+            leafAsCheckbox: this.leafAsCheckbox,
             listeners: {
                 click: this.onTreeNodeClick,
                 scope: this
             }
         });
         this.add(this.layersTree);
-        //this.fireEvent("beforerender");
     },
 
     /** private: method[_onShow]
@@ -184,7 +190,6 @@ PersistenceGeo.widgets.FolderTreeWindow = Ext.extend(Ext.Window, {
      */
     _onShow: function () {
         this.layersTree.reload();
-        //this.fireEvent("show");
     },
 
     showLoading: function (show) {
