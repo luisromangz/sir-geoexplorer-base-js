@@ -461,6 +461,8 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.widgets.GeoNetwo
             height: mapPanelSize.height
         });
 
+        console.log("create = "+create);
+
         editorWindow.show();
         editorPanel.init(metadataId, create, group, child);
         editorPanel.doLayout(false);

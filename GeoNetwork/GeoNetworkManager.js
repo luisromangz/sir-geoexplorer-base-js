@@ -278,7 +278,7 @@ function initGNManager(){
                             metadataShowFn : show
                         });
 
-    catalogue.login('admin', 'admin');
+    catalogue.login(GeoNetwork.Settings.username, GeoNetwork.Settings.password);
 
      /**
              * Bottom bar

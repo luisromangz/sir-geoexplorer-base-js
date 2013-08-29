@@ -39,7 +39,19 @@ Ext.namespace("PersistenceGeo.widgets");
 /** api: constructor 
  *  .. class:: GeoNetworkEditorPanel(config)
  *
- *     Create a GeoNetwork editor panel
+ *     Create a GeoNetwork editor panel.
+ * 
+ *  TODO: Import more data:
+ *   * Generate a thumbnail 
+ *   * Generate a large_thumbnail 
+ *   * Generate a date
+ *   * Generate a version
+ *   * Generate legal constraints 
+ *   * Generate spatial resolution
+ *   * Generate author info from pgeo context
+ *   * Force spanish everywere
+ *   * Remove multi-lengual by default (in template) 
+ *   * Improve online info: WFS, WPS, download
  *
  *
  *  Known limitation: only one editor panel could be created in one application
@@ -90,12 +102,25 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
         for(var formParam in jsonData.formData){
             this.setFormValue(formParam, jsonData.formData[formParam]);
         }
+        // Handle extent
+        this.catalogue.extentMap.mapPanel.map.zoomToExtent(GeoNetwork.map.EXTENT);
+        if(jsonData.layerSelected){
+            var layer = jsonData.layerSelected.getLayer();
+            if(layer.boundCalculated){
+                this.catalogue.extentMap.setBbox(layer.boundCalculated);
+            }else{
+                this.catalogue.extentMap.setBbox(GeoNetwork.map.EXTENT);
+            }
+            // TODO: Add a compatible layer
+            //this.catalogue.extentMap.mapPanel.map.addLayer(layer);
+        }
     },
 
     /** private: method[onMetadataUpdated]
      *  Contructor method.
      */
-    onMetadataUpdated: function (config) {
+    onMetadataUpdated: function () {
+        PersistenceGeo.widgets.GeoNetworkEditorPanel.superclass.onMetadataUpdated.call(this);
         this.initWithController(this.controller);
     }
 
