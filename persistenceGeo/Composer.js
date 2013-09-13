@@ -23,6 +23,19 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
      */
     cookieParamName: 'geoexplorer-user',
 
+    /** api: config[publicWorkspace]
+     *  ``String`` The name of the public workspace in Geoserver.
+     *  logged in user.
+     */
+    publicWorkspace: "gore",
+
+    /**
+     * api: config[printingNorthArrowPosition]
+     * The position where the north arrow will be rendered in the map PDF printing functionality.
+     * Acceptable values are "topRight", "bottomRight" and "topLeft".
+     */
+    printingNorthArrowPosition: "bottomRight",
+
     // Begin i18n.
     mapText: "Map",
     saveMapText: "Save map",
@@ -56,6 +69,9 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
     initialZoom: null,
 
 
+    geoserverBaseurl: null,
+
+
     /** 
      * Base layers names: May be the same than defined in composer.html!!
      **/
@@ -83,6 +99,9 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
         // }
         // should not be persisted or accessed again
         delete config.authStatus;
+
+        // Is set as variable in composer.html, so its avalaible in window.
+        this.geoserverBaseurl = window.geoserverBaseUrl;
 
         /**
          *  Here common config tools!!!
@@ -157,7 +176,8 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
             actionTarget: "map.tbar",
             toggleGroup: "globalToggle",
             pdfFooterText: this.pdfFooterText,
-            pdfLogoUri: this.logoDataUri
+            pdfLogoUri: this.logoDataUri,
+            northArrowPosition:  this.printingNorthArrowPosition
         }, {
             ptype: "gxp_zoomtoinitialvalues",
             id: "zoomToInitialValues",
@@ -196,7 +216,9 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
             outputTarget: false,
             height: 500,
             width: 500,
-            uploadSource: "local"
+            uploadSource: "local",
+            // We only show in the layer selector the layers in the public workspace
+            customLocalSourceURL: this.geoserverBaseurl+"/wms?request=GetCapabilities&namespace="+this.publicWorkspace
         }, {
             ptype: 'gxp_extendedtoolbar',
             buttonText: 'Exportar',
