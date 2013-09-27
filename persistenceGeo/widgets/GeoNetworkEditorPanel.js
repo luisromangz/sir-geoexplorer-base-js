@@ -177,7 +177,7 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
             width: 280,
             items: [
                 // TODO: Fix integration and uncomment panels!!
-                this.relationPanel, 
+               // this.relationPanel, 
                 // this.suggestionPanel,
                 this.validationPanel, 
                 this.helpPanel]
@@ -309,6 +309,34 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
         PersistenceGeo.widgets.GeoNetworkEditorPanel.superclass.cancel.call(this);
         if (this.controller){
             this.controller.fireEvent('editorpanelaction', 'cancel', {
+                metadataUuid: this.relationPanel.metadataUuid,
+                metadataId: this.metadataId
+            });
+        }
+    },
+
+    /** api: method[publicationRequest]
+     *
+     * Saves the current editing sesion and requests publication of the layer in SIR-AMIN.
+     */
+    publicationRequest : function() {
+        PersistenceGeo.widgets.GeoNetworkEditorPanel.superclass.save.call(this);
+        if (this.controller){
+            this.controller.fireEvent('editorpanelaction', 'publicationRequest', {
+                metadataUuid: this.relationPanel.metadataUuid,
+                metadataId: this.metadataId
+            });
+        }
+    },
+
+     /** api: method[doPublication]
+     *
+     * Saves the current editing sesion and marks the layer as published in SIR-AMIN.
+     */
+    doPublication : function() {
+        PersistenceGeo.widgets.GeoNetworkEditorPanel.superclass.save.call(this);
+        if (this.controller){
+            this.controller.fireEvent('editorpanelaction', 'doPublication', {
                 metadataUuid: this.relationPanel.metadataUuid,
                 metadataId: this.metadataId
             });

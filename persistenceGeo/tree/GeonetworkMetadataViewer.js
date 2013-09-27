@@ -82,11 +82,15 @@ PersistenceGeo.tree.GeonetworkMetadataViewer = Ext.extend(PersistenceGeo.widgets
         if(record && record.getLayer()){
           var layer = record.getLayer();
           this.layerSelected = record;
+          this.layerName = layer.layerLabel;
           this.layerUuid = layer.metadata.metadataUuid;
-          disable = !this.layerUuid;
+
+          // We only activate the option for  public layers having metadata, but no publication requests, nor institution layers
+          // Publication requests metadata can be viewed from the confirm/reject tool.
+          disable = !layer.layerID || !!layer.authId  || !this.layerUuid;
         }
 
-        this.launchAction.setDisabled(disable); 
+        this.launchAction.setDisabled(disable);
     },
 
     /**
@@ -103,7 +107,7 @@ PersistenceGeo.tree.GeonetworkMetadataViewer = Ext.extend(PersistenceGeo.widgets
             resultsView : catalogue.resultsView,
             layout : 'fit',
             // autoHeight:true,
-            padding : '5px 25px',
+            padding : '5px 0',
             currTab : GeoNetwork.defaultViewMode || 'simple',
             printDefaultForTabs : GeoNetwork.printDefaultForTabs || false,
             printUrl : '../../apps/html5ui/print.html',
@@ -113,7 +117,7 @@ PersistenceGeo.tree.GeonetworkMetadataViewer = Ext.extend(PersistenceGeo.widgets
       });
 
       this.window = new Ext.Window({
-            title:  this.toolWindowText,
+            title:  String.format(this.toolWindowText, this.layerName),
             width: this.windowWidth,
             height: this.windowHeight,
             layout: 'fit',

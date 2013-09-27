@@ -55,8 +55,8 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
     formActionFieldText: "Target action",
     formNameFieldText: "Target name",
     formNameFieldValueText: "Name of the layer",
-    metadataWindowText: "Metadata for layer {0} publish request",
-    metadataEditorTitle: "Metadata editor",
+    metadataWindowText: "Metadata for layer publish request",
+    metadataEditorTitle: "Metadata for layer publication",
     targetLayerWindowTitleText: "Layer to be updated",
     targetFolderWindowTitleText: "Target folder",
     validationErrorsTitle: "Validation errors",
@@ -92,6 +92,9 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
     windowHeight: 200,
     metadataWindowWidth: 800,
     metadataWindowHeight: 600,
+
+    /** The window used to edit metadata will be stored here **/
+    editorWindow : null,
 
     /** Selected target data **/
     selectedTargetId: null,
@@ -301,7 +304,7 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
 	                });
 	        
 	        this.newMetadataWindow = new Ext.Window({
-	            title:  String.format(this.metadataWindowText, layer.name),
+	            title: this.metadataWindowText,
 	            width: this.metadataWindowWidth,
 	            height: this.metadataWindowHeight,
 	            layout: 'fit',
@@ -348,6 +351,7 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
         this.targetWindow.on({
             "treenodeclick": this.onTargetSelected,
             "beforehide": this.closeAll,
+            "treenodeloaded" : this.onTreeNodeLoaded,
             scope: this
         });
 
@@ -355,6 +359,16 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
         this.targetWindow.setPosition(this.targetWindowPos[0], this.targetWindowPos[1]);
 
         return this.targetWindow;
+    },
+
+    onTreeNodeLoaded: function(node, selectionModel) {
+        // We selected the recevided node if we are editing.
+        if(node.id == this.selectedTargetId) {
+            selectionModel.select(node);
+        }
+
+        node.expand();
+        node.expandChildNodes();
     },
 
     /**
@@ -614,8 +628,10 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
         }
 
         var editorWindow = new Ext.Window({
-            title: this.metadataEditorTitle, items:[editorPanel],
+            title: this.metadataEditorTitle,
+            items:[editorPanel],
             closeAction: 'close',
+            cls: "gnMetadataEditorWindow",
             width: width,
             height: height
         });
@@ -623,6 +639,8 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
         editorWindow.show();
         editorPanel.init(metadataId, create, group, child);
         editorPanel.doLayout(false);
+
+        this.editorWindow = editorWindow;
 
         return editorWindow;
 

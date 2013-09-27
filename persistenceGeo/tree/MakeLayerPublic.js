@@ -48,6 +48,9 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetworkM
     /** Save url for the layer publish request **/
     saveUrl: '/persistenceGeo/saveLayerPublishRequest',
 
+    savingRequestError: "An error was found while saving the publication request.",
+    savingRequestSuccessMsg: "The publication request was registered successfully. It will be attended by an admin as soon as possible.",
+
     /** private: method[checkIfEnable]
      *  :arg layerRec: ``GeoExt.data.LayerRecord``
      *
@@ -90,8 +93,8 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetworkM
      *  calling to this.saveUrl
      */
     onEditorPanelAction: function (action, arg1){
-        if(action == "finish" || action =="validate"){
-            // Action 'finish' | 'validate' --> save
+        if(action =="publicationRequest"){
+            // Action 'validate' is perused so we can create the publication request.
             var targetFolder = this.jsonData.activeAction == this.KNOWN_ACTIONS.NEW_LAYER ?
                 this.jsonData.selectedTargetId : null;
             var targetLayer = this.jsonData.activeAction == this.KNOWN_ACTIONS.UPDATE_LAYER ?
@@ -134,13 +137,17 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetworkM
                 layer.metadata.metadataId = this.jsonData.metadataId;
                 //TODO: Change condition
 
+                Ext.Msg.alert("", this.savingRequestSuccessMsg);
                 this.launchAction.setDisabled(true); 
+
+                this.editorWindow.destroy();
             }
         }
     },
 
     handleFailure: function(response){
-        console.error("TODO: Handle me!! Error saving the layer!");
+
+        Ext.Msg.alert("", this.savingRequestError);
     }
 
 });

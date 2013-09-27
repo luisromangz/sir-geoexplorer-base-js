@@ -40,6 +40,10 @@ PersistenceGeo.widgets.GeoNetworkEditorToolbar = Ext.extend(GeoNetwork.editor.Ed
     /** api: ptype = pgeo_gneditortoolbar */
     ptype: "pgeo_gneditortoolbar",
 
+    doPublicationText : "Allow publication",
+    requestPublicationText: "Request publication",
+    rejectPublicationText: "Reject publication",
+
     defaultConfig: {
         isTemplate: false,
         /**
@@ -76,25 +80,63 @@ PersistenceGeo.widgets.GeoNetworkEditorToolbar = Ext.extend(GeoNetwork.editor.Ed
             scope: this.editor
         });
         
-        this.checkAction = new Ext.Action({
-            text: OpenLayers.i18n('saveAndCheck'),
-            iconCls: 'validateMetadata',
+        // Request related buttons.
+        this.doPublishAction = new Ext.Action({
+            text: this.doPublicationText,
             handler: function(){
-                this.validationPanel.validate();
+                this.doPublication();
             },
             scope: this.editor
         });
 
-        var saveAndCloseText = OpenLayers.i18n('saveAndClose');
+        this.requestPublishAction = new Ext.Action({
+            text: this.requestPublicationText,
+            // We
+            handler: function(){
+                this.publicationRequest();
+            },         
+            scope: this.editor
+        });
+
+        this.rejectAction = new Ext.Action({
+            text: this.rejectPublicationText,
+            // We
+            handler: function(){
+                this.cancel();
+            },
+            scope: this.editor
+        });
+
+
+        // Creates unused actions needed by the users of the class internally, but not for our sir-admin users.
+        this._createLegacyActions();
+
+
+        cmp.push(this.createViewMenu());        
+       
+
         if(this.editor 
             && this.editor.controller
             && this.editor.controller.isUpdate){
-            //TODO: i18n
-            saveAndCloseText = 'Aprobar';
+            cmp.push(this.doPublishAction);
+            cmp.push(this.rejectAction);
+        }else{
+             cmp.push( 
+                this.requestPublishAction);
         }
+        // cmp.push(['->'], this.configMenu());
+
+        GeoNetwork.editor.EditorToolbar.superclass.initComponent.call(this);
         
-        this.saveAndCloseAction = new Ext.Action({
-            text: saveAndCloseText,
+        this.add(cmp);
+    },
+
+    _createLegacyActions : function() {
+        // Buttons kept so all still works, but that aren't needed.
+        var saveAndCloseText = OpenLayers.i18n('saveAndClose');        
+
+         this.saveAndCloseAction = new Ext.Action({
+           text: saveAndCloseText,
             iconCls: 'quitMetadata',
             handler: function(){
                 this.finish();
@@ -116,7 +158,7 @@ PersistenceGeo.widgets.GeoNetworkEditorToolbar = Ext.extend(GeoNetwork.editor.Ed
             enableToggle: true,
             hidden: this.hideMinorEdit,
             text: OpenLayers.i18n('minorEdit'),
-            tooltip: OpenLayers.i18n('minorEditTT'),
+           tooltip: OpenLayers.i18n('minorEditTT'),
             listeners: {
                 toggle: function(c, pressed){
                     document.mainForm.minor.value = this.minorEdit = pressed;
@@ -134,41 +176,16 @@ PersistenceGeo.widgets.GeoNetworkEditorToolbar = Ext.extend(GeoNetwork.editor.Ed
             },
             scope: this.editor
         });
-        
         this.cancelAction = new Ext.Action({
-            text: OpenLayers.i18n('cancel'),
+           text: OpenLayers.i18n('cancel'),
             iconCls: 'cancel',
             handler: function(){
                 this.cancel();
             },
             scope: this.editor
         });
-        
-        // TODO: Customize more!
-        cmp.push(
-                this.createViewMenu(), 
-                ['-'], 
-                //this.saveAction, 
-                this.saveAndCloseAction
-                //, 
-                //this.minorCheckbox, 
-                //['->'], this.resetAction
-                );
-
-        if(this.editor 
-            && this.editor.controller
-            && this.editor.controller.isUpdate){
-            cmp.push(this.cancelAction);
-        }else{
-             cmp.push( 
-                this.checkAction);
-        }
-        cmp.push(['->'], this.configMenu());
-
-        GeoNetwork.editor.EditorToolbar.superclass.initComponent.call(this);
-        
-        this.add(cmp);
     }
+
 
 
 });

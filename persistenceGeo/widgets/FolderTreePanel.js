@@ -182,6 +182,8 @@ PersistenceGeo.widgets.FolderTreePanel = Ext.extend(Ext.tree.TreePanel, {
                                     type: json.data[i].type,
                                     data: json.data[i].data
                                 }));
+
+                                this.onNodeLoaded(treeLoader, node, action.responseText);
                             }
                         }
                     },
@@ -192,13 +194,13 @@ PersistenceGeo.widgets.FolderTreePanel = Ext.extend(Ext.tree.TreePanel, {
         }, config));
 
         this.on({
-            beforeappend: this.onBeforeAppend,
+            beforeappend: this.onBeforeAppend,           
             scope: this
         });
 
-        this.addEvents({
-            nodeLoaded: true
-        });
+        this.addEvents(
+            "nodeloaded"
+        );
     },        
 
     /** api: function[getRootFilter]
@@ -311,7 +313,7 @@ PersistenceGeo.widgets.FolderTreePanel = Ext.extend(Ext.tree.TreePanel, {
     },
 
     onNodeLoaded: function (treeLoader, node, response) {
-        this.fireEvent('nodeLoaded', treeLoader, node);            
+        this.fireEvent('nodeloaded', treeLoader, node);            
     }
 
 

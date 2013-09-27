@@ -151,7 +151,17 @@ PersistenceGeo.widgets.FolderTreeWindow = Ext.extend(Ext.Window, {
              *  * node  - ``Ext.tree.Node`` node clicked
              *  * checked  - ``Boolean`` the check value
              */
-            "treenodeclick"
+            "treenodeclick",
+
+            /** api: event[treenoedeloaded]
+             *  Fired before the a tree node element is clicked
+             *
+             *  Listeners arguments:
+             *
+             *  * node  - ``Ext.tree.Node`` node loaded.
+             *  * selectionModel  - ``Ext.tree.SelectionModel`` the selection model of the tree containing the node.
+             */
+            "treenoedeloaded"
         );
     },
 
@@ -179,6 +189,7 @@ PersistenceGeo.widgets.FolderTreeWindow = Ext.extend(Ext.Window, {
             leafAsCheckbox: this.leafAsCheckbox,
             listeners: {
                 click: this.onTreeNodeClick,
+                nodeloaded: this.onTreeNodeLoaded,
                 scope: this
             }
         });
@@ -201,6 +212,10 @@ PersistenceGeo.widgets.FolderTreeWindow = Ext.extend(Ext.Window, {
      */
     onTreeNodeClick: function (node, checked) {
         this.fireEvent("treenodeclick", node, checked);
+    },
+
+    onTreeNodeLoaded: function(nodeloader, node) {
+        this.fireEvent("treenodeloaded", node, this.layersTree.getSelectionModel());
     },
 
     /** api: method[setShowLayers]

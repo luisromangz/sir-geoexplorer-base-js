@@ -780,16 +780,30 @@ GeoExt.Lang.add(
         formNameFieldText: "Nombre deseado",
         formNameFieldValueText: "Nombre de la capa",
         formTemplateFieldText: "Norma a aplicar",
-        formTemplateFieldValueText: "ISO 19119"
+        formTemplateFieldValueText: "ISO 19119",
+        savingRequestError : "Ocurrió un error al guardar la solicitud de publicación.",
+        savingRequestSuccessMsg: "La solicitud de publicación de guardó con éxito. Será atendidad por un administrador tan pronto como sea posible."
     },
 
     "PersistenceGeo.tree.ConfirmLayerPublic.prototype": {
-        toolText: 'Confirma o rechaza publicación',
+        toolText: 'Confirmar o rechazar publicación',
         toolTooltipText: 'Confirma o rechaza la solicitud de publicación de un usuario',
         toolWindowText: "Confirmación de la publicación de la capa  '{0}'",
         cancelButtonText: 'Confirmar rechazo',
         commentFieldLabelText: 'Motivos del rechazo',
-        cancelWindowText: 'Rechazar publicación de \'{0}\''
+        cancelWindowText: 'Rechazar publicación de \'{0}\'',
+        publicationSuccessText: 'La capa se publicó con éxito. Por favor recargue para ver los cambios.',
+        rejectionSuccessText: "La publiación de la capa se rechazó con éxito.",
+        publicationErrorText: "Ocurrió un error al publicar la capa",
+        rejectionErrorText: "Ocurrió un error al rechazar la publicación de la capa.",
+        confirmationTitleText: "Confirmación",
+        confirmationQuestionText: "¿Realmente quiere hacer que la capa sea pública con los metadatos actuales?"
+    },
+
+    'PersistenceGeo.widgets.GeoNetworkEditorToolbar.prototype' :  {
+        doPublicationText : "Permitir publicación",
+        requestPublicationText: "Solicitar publicación",
+        rejectPublicationText: "Denegar publicación"
     },
 
     'PersistenceGeo.tree.GeoNetworkMetadataPublisher.prototype' : {
@@ -799,11 +813,11 @@ GeoExt.Lang.add(
         formActionFieldText: "Target action",
         formNameFieldText: "Target name",
         formNameFieldValueText: "Name of the layer",
-        metadataWindowText: "Metadatos para la capa '{0}'",
+        metadataWindowText: "Plantilla de metadatos para la capa",
         targetLayerWindowTitleText: "Capa a actualizar",
         targetFolderWindowTitleText: "Carpeta de destino",
         formActionFieldPosibleValues: ["Publicar nueva capa", "Actualizar capa"],
-         metadataEditorTitle: "Metadatos de la Capa",
+        metadataEditorTitle: "Metadatos para la publicación de la Capa",
         validationErrorsTitle: "Errores de validación",
         noLayerSelectedError: "No hay capa seleccionada.",
         noValidActionSelectedError: "Debe seleccionar la acción a realizar",
