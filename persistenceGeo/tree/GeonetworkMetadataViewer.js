@@ -85,8 +85,12 @@ PersistenceGeo.tree.GeonetworkMetadataViewer = Ext.extend(PersistenceGeo.widgets
           this.layerName = layer.layerLabel;
           this.layerUuid = layer.metadata.metadataUuid;
 
-          // We only activate the option for  public layers having metadata, but no publication requests, nor institution layers
-          // Publication requests metadata can be viewed from the confirm/reject tool.
+          if(!this.layerUuid 
+              &&layer.metadata.json
+              &&layer.metadata.json.properties
+              &&layer.metadata.json.properties.metadataUuid){
+            this.layerUuid = layer.metadata.json.properties.metadataUuid;
+          }
           disable = !layer.layerID || !!layer.authId  || !this.layerUuid;
         }
 

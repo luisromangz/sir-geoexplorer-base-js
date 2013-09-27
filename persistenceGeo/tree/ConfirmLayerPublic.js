@@ -155,6 +155,7 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
      *  For this widget we need to save the layer changes in a gis_layer_publish_request entry
      *  calling to this.saveUrl
      */
+<<<<<<< HEAD
     onEditorPanelAction: function(action, metadataUuid) {
         if (action == "doPublication") {
 
@@ -166,6 +167,33 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
                 }
 
                 self._doPublicationRequest(metadataUuid);
+=======
+    onEditorPanelAction: function (action, arg1){
+        if(action == "finish" || action =="validate"){
+            
+            // Action 'finish' | 'validate' --> save
+            var targetFolder = this.jsonData.activeAction == this.KNOWN_ACTIONS.NEW_LAYER ?
+                this.jsonData.selectedTargetId : null;
+            var targetLayer = this.jsonData.activeAction == this.KNOWN_ACTIONS.UPDATE_LAYER ?
+                this.jsonData.selectedTargetId : null;
+
+            // save metadata id and Uuid
+            this.jsonData.metadataUuid = arg1.metadataUuid;
+            this.jsonData.metadataId = arg1.metadataId;
+
+            // publish metadata!!
+            this.makeMetadataPublic();
+
+            Ext.Ajax.request({
+                url : this.target.defaultRestUrl + this.saveUrl,
+                params:{
+                    layerPublishRequestId: this.jsonData.layerPublishRequestId
+                },
+                method: 'POST',
+                success : this.handleSuccess,
+                failure : this.handleFailure,
+                scope : this
+>>>>>>> 4f524f694af37ec77d0b23a0f19ebc2384a90b0b
             });
 
 
@@ -313,8 +341,38 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
 
     handleFailure: function(response) {
         Ext.Msg.alert("", this.publicationErrorText);
-    }
+    },
+    /** This function make the metadata public!! **/
+    makeMetadataPublic: function(){
 
+        var firstUrl = GN_URL + '/srv/eng/metadata.select?id='+this.jsonData.metadataUuid + '&selected=add';
+        var secondUrl = GN_URL + '/srv/eng/metadata.batch.admin.form';
+        var thirdUrl = GN_URL + '/srv/eng/metadata.batch.update.privileges?&timeType=on&_1_0=on&_0_0=on&_-1_0=on';
+
+        Ext.Ajax.request({
+            url : firstUrl,
+            method: 'GET',
+            success : function(){
+                 Ext.Ajax.request({
+                    url : secondUrl,
+                    method: 'GET',
+                    success : function(){
+                       Ext.Ajax.request({
+                            url : thirdUrl,
+                            method: 'GET',
+                            disableCaching: false, //we need this parameter because gn try to parse _dc as _${idGropup}
+                            success : function(){
+                                //console.log("OK!!");
+                            },
+                            scope : this
+                        }); 
+                    },
+                    scope : this
+                });
+            },
+            scope : this
+        });
+    }
 });
 
 Ext.preg(PersistenceGeo.tree.ConfirmLayerPublic.prototype.ptype, PersistenceGeo.tree.ConfirmLayerPublic);
