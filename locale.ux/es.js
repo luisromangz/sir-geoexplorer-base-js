@@ -782,13 +782,18 @@ GeoExt.Lang.add(
         formTemplateFieldText: "Norma a aplicar",
         formTemplateFieldValueText: "ISO 19119",
         savingRequestError : "Ocurrió un error al guardar la solicitud de publicación.",
-        savingRequestSuccessMsg: "La solicitud de publicación de guardó con éxito. Será atendidad por un administrador tan pronto como sea posible."
+        savingRequestSuccessMsg: "La solicitud de publicación de guardó con éxito. Será atendidad por un administrador tan pronto como sea posible.",
+        publicationRequestText: "Solicitud de publicación",
+        checkError: "Ocurrió  un error comprobando si se puede realizar la solicitud de publicación.",
+        existingPublicationRequestText: "No se puede solicitar la publicación, ya existe una solicitud de publicación para la capa a la espera de revisón.",
+        confirmPublicationRequest: "¿Realmente desea solicitar la publicación de la capa con los metadatos introducidos?",
+        doPublicationRequestText: "Solicitar publicación"
     },
 
     "PersistenceGeo.tree.ConfirmLayerPublic.prototype": {
         toolText: 'Confirmar o rechazar publicación',
         toolTooltipText: 'Confirma o rechaza la solicitud de publicación de un usuario',
-        toolWindowText: "Confirmación de la publicación de la capa  '{0}'",
+        toolWindowText: "Confirmación de la publicación de la capa {0}",
         cancelButtonText: 'Confirmar rechazo',
         commentFieldLabelText: 'Motivos del rechazo',
         cancelWindowText: 'Rechazar publicación de \'{0}\'',
@@ -801,9 +806,10 @@ GeoExt.Lang.add(
     },
 
     'PersistenceGeo.widgets.GeoNetworkEditorToolbar.prototype' :  {
-        doPublicationText : "Permitir publicación",
+        doPublicationText : "Publicar",
         requestPublicationText: "Solicitar publicación",
-        rejectPublicationText: "Denegar publicación"
+        rejectPublicationText: "Rechazar",
+        validateText: "Validar"
     },
 
     'PersistenceGeo.tree.GeoNetworkMetadataPublisher.prototype' : {

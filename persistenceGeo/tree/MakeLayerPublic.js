@@ -55,6 +55,8 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetworkM
     publicationRequestText: "Publication Request",
     checkError : "An error was found while checking if the publication is possible.",
     existingPublicationRequestText: "There is already a publication request peding review for the selected layer, so no new publication requests for the layer can be made.",
+    confirmPublicationRequest: "Do you really want to request the publication of the layer with the current metadata?",
+    doPublicationRequestText:"Request publication",
 
 
     /** private: method[checkIfEnable]
@@ -131,8 +133,31 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetworkM
      */
     onEditorPanelAction: function (action, arg1){
         if(action =="publicationRequest"){
-            // Action 'validate' is perused so we can create the publication request.
-            var targetFolder = this.jsonData.activeAction == this.KNOWN_ACTIONS.NEW_LAYER ?
+            Ext.Msg.show({
+                title: this.publicationRequestText,
+                msg:this.confirmPublicationRequest,
+                buttons: {
+                  "ok": this.doPublicationRequestText,
+                  "cancel": true
+                },
+                fn:function(btn) {
+                  if(btn!="ok") {
+                      return;
+                  }
+                  this._createPublicationRequest();
+                },
+                scope:this
+            });
+           
+        }else if(action =="cancel"){
+            // Action 'cancel' -->  TODO: We need to remove the layer_request?!
+        }else if(action =="reset"){
+            // something todo if action is 'reset'
+        }
+    },
+
+    _createPublicationRequest : function() {
+        var targetFolder = this.jsonData.activeAction == this.KNOWN_ACTIONS.NEW_LAYER ?
                 this.jsonData.selectedTargetId : null;
             var targetLayer = this.jsonData.activeAction == this.KNOWN_ACTIONS.UPDATE_LAYER ?
                 this.jsonData.selectedTargetId : null;
@@ -149,15 +174,11 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetworkM
                     targetLayer: targetLayer
                 },
                 method: 'POST',
+
                 success : this.handleSuccess,
                 failure : this.handleFailure,
                 scope : this
             });
-        }else if(action =="cancel"){
-            // Action 'cancel' -->  TODO: We need to remove the layer_request?!
-        }else if(action =="reset"){
-            // something todo if action is 'reset'
-        }
     },
 
     handleSuccess: function(response){
