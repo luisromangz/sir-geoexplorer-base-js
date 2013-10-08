@@ -82,11 +82,8 @@ PersistenceGeo.tree.GeonetworkMetadataViewer = Ext.extend(PersistenceGeo.widgets
         if(record && record.getLayer()){
           var layer = record.getLayer();
           this.layerSelected = record;
-          this.layerName = layer.layerLabel;
-          this.layerUuid = layer.metadata.metadataUuid;
-
-          if(!this.layerUuid 
-              &&layer.metadata.json
+          this.layerName = layer.name;
+          if(layer.metadata.json
               &&layer.metadata.json.properties
               &&layer.metadata.json.properties.metadataUuid){
             this.layerUuid = layer.metadata.json.properties.metadataUuid;
