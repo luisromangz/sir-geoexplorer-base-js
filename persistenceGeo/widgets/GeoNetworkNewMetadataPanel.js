@@ -52,7 +52,13 @@ PersistenceGeo.widgets.GeoNetworkNewMetadataPanel = Ext.extend(GeoNetwork.editor
 
 
 		this.on("render", function() {
-			this.loadMask = new Ext.LoadMask(Ext.getBody());
+            // We add a mask in the topmost container
+            var w = this;
+            do {
+                w = w.ownerCt;
+            } while (w.ownerCt);
+
+			this.loadMask = new Ext.LoadMask(w.getEl());
 			this.loadMask.show();
 		},this);
 	},
