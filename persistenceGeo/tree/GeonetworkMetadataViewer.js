@@ -101,7 +101,7 @@ PersistenceGeo.tree.GeonetworkMetadataViewer = Ext.extend(PersistenceGeo.widgets
      */
     showWindow: function(layerRecord) {
 
-      var aResTab = new GeoNetwork.view.ViewPanel({
+      var aResTab = new PersistenceGeo.widgets.GeonetworkViewPanel({
             serviceUrl : catalogue.services.mdView + '?uuid=' + this.layerUuid,
             lang : catalogue.lang,
             autoScroll : true,
