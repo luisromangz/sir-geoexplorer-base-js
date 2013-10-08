@@ -350,8 +350,8 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
         });
         this.targetWindow.on({
             "treenodeclick": this.onTargetSelected,
-            "beforehide": this.closeAll,
-            "treenodeloaded": this.onTreeNodeLoaded,
+            "beforehide": this.closeAll,  
+            "treenodeloaded" : this.onTreeNodeLoaded,
             scope: this
         });
 
@@ -361,14 +361,8 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
         return this.targetWindow;
     },
 
-    onTreeNodeLoaded: function(node, selectionModel) {
-        // We selected the recevided node if we are editing.
-        if (node.id == this.selectedTargetId) {
-            selectionModel.select(node);
-        }
+    onTreeNodeLoaded : function(node, selectionModel) {
 
-        node.expand();
-        node.expandChildNodes();
     },
 
     /**
@@ -377,8 +371,17 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
      */
     onTargetSelected: function(node, clicked) {
         if (this.activeAction == this.KNOWN_ACTIONS.NEW_LAYER || node.leaf) {
-            this.selectedTargetId = node.id;
-            this.selectedTargetName = node.text;
+            this.selectedTargetId = +node.id;
+            if(this.selectedTargetId > PersistenceGeo.widgets.FolderTreePanel.prototype.LEAF_ID_OFFSET) {
+                // We normalize layer's ids.
+                this.selectedTargetId -= PersistenceGeo.widgets.FolderTreePanel.prototype.LEAF_ID_OFFSET;
+              
+            }
+            this.selectedTargetId+=""; // Back to string.
+        } else {
+            // E.g.: the user select's a folder when should have selected a layer. 
+            // We clear the selected target id so we get a validation error.
+            this.selectedTargetId = null;
         }
     },
 
@@ -486,7 +489,7 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
             errors.push(this.noDesiredNameSetError);
         }
 
-        if (!this.selectedTargetId || !this.selectedTargetName) {
+        if (!this.selectedTargetId) {
             if (this.KNOWN_ACTIONS.NEW_LAYER == this.activeAction) {
                 errors.push(this.noValidTargetFolderError);
             } else {
@@ -501,15 +504,21 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
             return false;
         }
 
+        this.requestData = {
+            layerTitle: this.nameField.getValue(),
+            targetId: this.selectedTargetId,
+            activeAction: this.activeAction 
+        };
+
         return true;
     },
 
     defaultCountry: 'España',
 
-    /** private: attribute[PUBLISH_REQUET_DATA_PREFIX]
+    /** private: attribute[PUBLISH_REQUEST_DATA_PREFIX]
      *  @see com.emergya.ohiggins.dto.LayerPublishRequestDto#toPropMap()
      */
-    PUBLISH_REQUET_DATA_PREFIX: "PUBLISH_REQUET_DATA_",
+    PUBLISH_REQUEST_DATA_PREFIX: "PUBLISH_REQUEST_DATA_",
 
     /** private: method[obtainCommonData]
      *  Obtain multi window form data
@@ -522,18 +531,19 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
         var metadataId = null;
         if (this.isUpdate) {
             var layer = this.layerSelected.getLayer();
+            var properties = layer.metadata.json.properties
             //TODO: Handle errors!!!
-            layerPublishRequestId = layer.metadata.json.properties[this.PUBLISH_REQUET_DATA_PREFIX + 'ID'];
-            nameLayer = layer.metadata.json.properties[this.PUBLISH_REQUET_DATA_PREFIX + 'NOMBREDESEADO'];
-            this.activeAction = layer.metadata.json.properties[this.PUBLISH_REQUET_DATA_PREFIX + 'ACTUALIZACION'] == 'true' ?
+            layerPublishRequestId =properties[this.PUBLISH_REQUEST_DATA_PREFIX + 'ID'];
+            nameLayer = properties[this.PUBLISH_REQUEST_DATA_PREFIX + 'NOMBREDESEADO'];
+            this.activeAction = properties[this.PUBLISH_REQUEST_DATA_PREFIX + 'ACTUALIZACION'] == 'true' ?
                 this.KNOWN_ACTIONS.UPDATE_LAYER : this.KNOWN_ACTIONS.NEW_LAYER;
-            var updatedLayerId = layer.metadata.json.properties[this.PUBLISH_REQUET_DATA_PREFIX + 'UPDATEDLAYERID'];
+            var updatedLayerId = properties[this.PUBLISH_REQUEST_DATA_PREFIX + 'UPDATEDLAYERID'];
             if (updatedLayerId) {
                 this.selectedTargetId = updatedLayerId;
             } else {
-                //TODO folderID in this.selectedTargetId
-                this.selectedTargetName = layer.metadata.json.properties[this.PUBLISH_REQUET_DATA_PREFIX + 'PUBLISHEDFOLDER'];
+                this.selectedTargetId = properties[this.PUBLISH_REQUEST_DATA_PREFIX + 'PUBLISHEDFOLDER'];
             }
+
             /*TODO: More data needed?
         	PUBLISH_REQUET_DATA_ACTUALIZACION: "false"
 			PUBLISH_REQUET_DATA_ESTADO: "PENDIENTE"
@@ -541,7 +551,7 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
 			PUBLISH_REQUET_DATA_NAME_PROPERTY: "nombredeseado"
 			PUBLISH_REQUET_DATA_NOMBREDESEADO: "gn_test"
 			PUBLISH_REQUET_DATA_PUBLISHEDFOLDER: "Otros"
-			PUBLISH_REQUET_DATA_PUBLISH_REQUET_DATA_PREFIX: "PUBLISH_REQUET_DATA_"
+			PUBLISH_REQUET_DATA_PUBLISH_REQUEST_DATA_PREFIX: "PUBLISH_REQUET_DATA_"
 			PUBLISH_REQUET_DATA_RECURSOSERVIDOR: "http://sig-minen-apps.emergya.es/geoserver/wms"
 			PUBLISH_REQUET_DATA_SERIALVERSIONUID: "-4222276053302896611"
 			PUBLISH_REQUET_DATA_SOURCELAYERID: "82"
