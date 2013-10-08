@@ -85,7 +85,6 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
             var userInfo = this.target.persistenceGeoContext.userInfo;
             if ( !! userInfo && userInfo.admin) {
                 this.layerSelected = record;
-                this.layerUuid = layer.metadata.metadataUuid;
                 var pending = false;
                 if(!!layer.metadata.json.properties){
                     var status = layer.metadata.json.properties[this.PUBLISH_REQUEST_DATA_PREFIX + 'ESTADO'];
@@ -93,7 +92,7 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
                         pending = true;
                     }
                 }
-                disable = !this.layerUuid && !pending;
+                disable = !!layer.layerID || !pending;
             }
         }
 
