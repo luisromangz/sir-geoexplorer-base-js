@@ -111,7 +111,7 @@ PersistenceGeo.tree.GeonetworkMetadataViewer = Ext.extend(PersistenceGeo.widgets
             padding : '5px 0',
             currTab : GeoNetwork.defaultViewMode || 'simple',
             printDefaultForTabs : GeoNetwork.printDefaultForTabs || false,
-            printUrl : '../../apps/html5ui/print.html',
+            printUrl : '/../geonetwork/apps/html5ui/print.html',
             catalogue : catalogue,
             // maximized: true,
             metadataUuid : this.layerUuid
