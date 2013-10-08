@@ -62,6 +62,9 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
     /** api: ptype = pgeo_gneditor */
     ptype: "pgeo_gneditor",
 
+    /** api: config[panelVertical] */
+    panelVertical: true,
+
 
     /**
      * private: property[controller]
@@ -94,8 +97,6 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
      *  Initializes the Editor panel.
      */
     initComponent: function() {
-        var optionsPanel;
-
         Ext.applyIf(this, this.defaultConfig);
 
         this.disabled = (this.metadataId ? false : true);
@@ -109,8 +110,6 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
         GeoNetwork.editor.EditorPanel.superclass.initComponent.call(this);
 
         panel = this;
-
-        
         
 
         // Create the main editor panel with toolbar
@@ -162,13 +161,18 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
         this.validationPanel = new GeoNetwork.editor.ValidationPanel(Ext.applyIf({
             metadataId: this.metadataId,
             editor: this,
-            serviceUrl: this.catalogue.services.mdValidate
+            serviceUrl: this.catalogue.services.mdValidate,
+            columnWidth: 0.5,
+            collapsible: this.panelVertical,
+            collapsed: this.panelVertical
         }, this.utilityPanelConfig.validationPanel));
 
         // TODO : Add option to not create help panel
         this.helpPanel = new GeoNetwork.editor.HelpPanel(Ext.applyIf({
             editor: this,
-            html: ''
+            html: '',
+            columnWidth: 0.5,
+            collapsible: this.panelVertical
         }, this.utilityPanelConfig.helpPanel));
 
         this.relationPanel = new GeoNetwork.editor.LinkedMetadataPanel(Ext.applyIf({
@@ -186,17 +190,19 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
             catalogue: this.catalogue
         }, this.utilityPanelConfig.suggestionPanel));
 
-        optionsPanel = {
-            region: 'east',
+        this.optionsPanel = this.add({
+            region: this.panelVertical?'east':'south',
             split: true,
             collapsible: true,
             collapsed: this.utilityPanelCollapsed,
             hideCollapseTool: true,
             collapseMode: 'mini',
             autoScroll: true,
-            // layout: 'fit',
+            layout: this.panelVertical?'auto':'column',
             minWidth: 280,
             width: 280,
+            height: 280,
+            minHeight: 280,
             items: [
                 // TODO: Fix integration and uncomment panels!!
                 // this.relationPanel, 
@@ -204,8 +210,14 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
                 this.validationPanel,
                 this.helpPanel
             ]
-        };
-        this.add(optionsPanel);
+        });
+
+        if(!this.panelVertical) {
+            this.optionsPanel.on("expand",function() {                
+                this.validationPanel.validate();
+            },this);
+        }
+
         /** private: event[metadataUpdated] 
          *  Fires after the metadata form is loaded (save, reset, change view mode)
          *  and the form is initialized (eg. calendar, map widget).
@@ -215,6 +227,8 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
          */
         this.addEvents('metadataUpdated', 'editorClosed');
 
+        
+
         this.on('added', function(el, container, index) {
             if (container) {
                 this.setContainer(container);
@@ -222,6 +236,7 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
             this.initPanelLayout();
         }, this);
 
+        
         //        this.on('hidden', this.onEditorClosed, this);
     },
 

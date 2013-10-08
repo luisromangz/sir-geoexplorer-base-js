@@ -627,6 +627,8 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
             selectionPanelImgPath: GN_URL + '/apps/js/ext-ux/images',
             controller: this,
             layout: 'border',
+            utilityPanelCollapsed: this.isUpdate,
+            panelVertical: !this.isUpdate,
             xlinkOptions: {
                 CONTACT: true
             }
