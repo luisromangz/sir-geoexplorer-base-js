@@ -125,13 +125,13 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetworkM
 
     /** api: method[onEditorPanelAction]
      *  :param action: ``String`` action called in editor panel
-     *  :param arg1: ``Object`` optional parameter from the panel (UUID, for example)
+     *  :param metadataInfo: ``Object`` optional parameter from the panel (UUID, for example)
      *
      *  Called when an action is pressed in the editor panel. 
      *  For this widget we need to save the layer changes in a gis_layer_publish_request entry
      *  calling to this.saveUrl
      */
-    onEditorPanelAction: function (action, arg1){
+    onEditorPanelAction: function (action, metadataInfo){
         if(action =="publicationRequest"){
             Ext.Msg.show({
                 title: this.publicationRequestText,
@@ -144,30 +144,32 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetworkM
                   if(btn!="ok") {
                       return;
                   }
-                  this._createPublicationRequest();
+                  this._createPublicationRequest(metadataInfo);
                 },
                 scope:this
             });
            
-        }else if(action =="cancel"){
-            // Action 'cancel' -->  TODO: We need to remove the layer_request?!
-        }else if(action =="reset"){
-            // something todo if action is 'reset'
+        } else if(action =="cancel"){
+            this.editorWindow.destroy();
         }
     },
 
-    _createPublicationRequest : function() {
-        var targetFolder = this.jsonData.activeAction == this.KNOWN_ACTIONS.NEW_LAYER ?
-                this.jsonData.selectedTargetId : null;
-            var targetLayer = this.jsonData.activeAction == this.KNOWN_ACTIONS.UPDATE_LAYER ?
-                this.jsonData.selectedTargetId : null;
-            this.jsonData.metadataUuid = arg1.metadataUuid;
-            this.jsonData.metadataId = arg1.metadataId;
+    _createPublicationRequest : function(metadataInfo) {
+        var targetFolder = this.requestData.activeAction == this.KNOWN_ACTIONS.NEW_LAYER ?
+                 this.requestData.targetId : null;
+            var targetLayer = this.requestData.activeAction == this.KNOWN_ACTIONS.UPDATE_LAYER ?
+                this.requestData.targetId : null;
+            this.jsonData.metadataUuid = metadataInfo.metadataUuid;
+            this.jsonData.metadataId = metadataInfo.metadataId;
+
+            this._createRequestMask = new Ext.LoadMask(Ext.getBody());
+            this._createRequestMask.show();
+
             Ext.Ajax.request({
                 url : this.target.defaultRestUrl + this.saveUrl,
                 params:{
                     layerId: this.jsonData.layerSelected.getLayer().layerID,
-                    layerName: this.jsonData.name,
+                    layerName:  this.requestData.layerTitle,
                     metadataUrl: this.jsonData.metadataUuid,
                     metadataId: this.jsonData.metadataId,
                     targetFolder: targetFolder,
@@ -182,6 +184,7 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetworkM
     },
 
     handleSuccess: function(response){
+        this._createRequestMask.hide();
         if(response.responseText){
             var jsonData = Ext.decode(response.responseText);
             if(!jsonData.success){
@@ -202,7 +205,7 @@ PersistenceGeo.tree.MakeLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetworkM
     },
 
     handleFailure: function(response){
-
+        this._createRequestMask.hide();
         Ext.Msg.alert(this.publicationRequestText, this.savingRequestError);
     }
 
