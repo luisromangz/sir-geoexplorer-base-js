@@ -794,15 +794,17 @@ GeoExt.Lang.add(
         toolText: 'Confirmar o rechazar publicación',
         toolTooltipText: 'Confirma o rechaza la solicitud de publicación de un usuario',
         toolWindowText: "Confirmación de la publicación de la capa {0}",
-        cancelButtonText: 'Confirmar rechazo',
+        rejectButtonText: 'Confirmar rechazo',
+        cancelButtonText: 'Cancelar',
         commentFieldLabelText: 'Motivos del rechazo',
-        cancelWindowText: 'Rechazar publicación de \'{0}\'',
+        rejectWindowTitleText: 'Rechazar publicación de la capa',
         publicationSuccessText: 'La capa se publicó con éxito. Por favor recargue para ver los cambios.',
-        rejectionSuccessText: "La publiación de la capa se rechazó con éxito.",
+        rejectionSuccessText: "La publicación de la capa se rechazó con éxito.",
         publicationErrorText: "Ocurrió un error al publicar la capa",
         rejectionErrorText: "Ocurrió un error al rechazar la publicación de la capa.",
         confirmationTitleText: "Confirmación",
-        confirmationQuestionText: "¿Realmente quiere hacer que la capa sea pública con los metadatos actuales?"
+        confirmationQuestionText: "¿Realmente quiere hacer que la capa sea pública con los metadatos actuales?",
+        publicationTitleText:"Publicación de capa"
     },
 
     'PersistenceGeo.widgets.GeoNetworkEditorToolbar.prototype' :  {
