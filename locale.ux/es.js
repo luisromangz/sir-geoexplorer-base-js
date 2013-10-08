@@ -777,8 +777,6 @@ GeoExt.Lang.add(
         toolWindowText: "Publicación de la capa '{0}'",
         formActionFieldText: "Acción a realizar",
         formActionFieldValueText: "Publicar nueva capa",
-        formNameFieldText: "Nombre deseado",
-        formNameFieldValueText: "Nombre de la capa",
         formTemplateFieldText: "Norma a aplicar",
         formTemplateFieldValueText: "ISO 19119",
         savingRequestError : "Ocurrió un error al guardar la solicitud de publicación.",
@@ -786,7 +784,7 @@ GeoExt.Lang.add(
         publicationRequestText: "Solicitud de publicación",
         checkError: "Ocurrió  un error comprobando si se puede realizar la solicitud de publicación.",
         existingPublicationRequestText: "No se puede solicitar la publicación, ya existe una solicitud de publicación para la capa a la espera de revisón.",
-        confirmPublicationRequest: "¿Realmente desea solicitar la publicación de la capa con los metadatos introducidos?",
+        confirmPublicationRequest: "¿Realmente desea solicitar la publicación de la capa con los metadatos introducidos?<br><br>Recuerde que no se permitirá la publicación si la hoja de metadatos no valida correctamente.",
         doPublicationRequestText: "Solicitar publicación"
     },
 
@@ -803,7 +801,7 @@ GeoExt.Lang.add(
         publicationErrorText: "Ocurrió un error al publicar la capa",
         rejectionErrorText: "Ocurrió un error al rechazar la publicación de la capa.",
         confirmationTitleText: "Confirmación",
-        confirmationQuestionText: "¿Realmente quiere hacer que la capa sea pública con los metadatos actuales?",
+        confirmationQuestionText: "¿Realmente quiere hacer que la capa sea pública con los metadatos actuales?<br><br>Recuerde que no debe permitir la publicación de metadatos inválidos.",
         publicationTitleText:"Publicación de capa"
     },
 
@@ -819,8 +817,8 @@ GeoExt.Lang.add(
         toolTooltipText: "Crear una solicitud de publicación",
         toolWindowText: "Solicitud de publicación de la capa '{0}'",
         formActionFieldText: "Target action",
-        formNameFieldText: "Target name",
-        formNameFieldValueText: "Name of the layer",
+        formNameFieldText: "Nombre deseado",
+        formNameFieldValueText: "Nombre de la capa",
         metadataWindowText: "Plantilla de metadatos para la capa",
         targetLayerWindowTitleText: "Capa a actualizar",
         targetFolderWindowTitleText: "Carpeta de destino",
