@@ -339,6 +339,7 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
             title: showLayers ? this.targetLayerWindowTitleText : this.targetFolderWindowTitleText,
             map: mapPanel.map,
             recursive: true,
+            allFolders: true,
             showLayers: showLayers,
             width: this.windowWidth,
             height: this.metadataWindowHeight - this.windowHeight - 20,
