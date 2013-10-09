@@ -780,7 +780,7 @@ GeoExt.Lang.add(
         formTemplateFieldText: "Norma a aplicar",
         formTemplateFieldValueText: "ISO 19119",
         savingRequestError : "Ocurrió un error al guardar la solicitud de publicación.",
-        savingRequestSuccessMsg: "La solicitud de publicación de guardó con éxito. Será atendidad por un administrador tan pronto como sea posible.",
+        savingRequestSuccessMsg: "La solicitud de publicación de guardó con éxito.<br><br>Será atendida por un administrador tan pronto como sea posible.",
         publicationRequestText: "Solicitud de publicación",
         checkError: "Ocurrió  un error comprobando si se puede realizar la solicitud de publicación.",
         existingPublicationRequestText: "No se puede solicitar la publicación, ya existe una solicitud de publicación para la capa a la espera de revisón.",
