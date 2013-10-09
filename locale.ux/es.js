@@ -816,7 +816,7 @@ GeoExt.Lang.add(
         toolText: "Publicar",
         toolTooltipText: "Crear una solicitud de publicación",
         toolWindowText: "Solicitud de publicación de la capa '{0}'",
-        formActionFieldText: "Target action",
+        formActionFieldText: "Acción deseada",
         formNameFieldText: "Nombre deseado",
         formNameFieldValueText: "Nombre de la capa",
         metadataWindowText: "Plantilla de metadatos para la capa",
