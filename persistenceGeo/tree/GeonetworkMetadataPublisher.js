@@ -212,10 +212,10 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
         // Position of the windows
         var position = publishRequestWindow.getPosition();
         var offset = publishRequestWindow.getWidth() + 20;
-        var offsetY = (this.metadataWindowHeight - this.windowHeight) / 2;
-        this.publishRequestWindowPos = [position[0] - this.windowWidth, position[1] - offsetY];
-        this.metadataWindowPos = [position[0] - this.windowWidth + offset, position[1] - offsetY];
-        this.targetWindowPos = [position[0] - this.windowWidth, position[1] - offsetY + this.windowHeight + 20];
+        var topPos = (document.height - this.metadataWindowHeight) / 2;
+        this.publishRequestWindowPos = [position[0] - this.windowWidth, topPos];
+        this.metadataWindowPos = [position[0] - this.windowWidth + offset, topPos];
+        this.targetWindowPos = [position[0] - this.windowWidth, topPos + this.windowHeight + 20];
         publishRequestWindow.setPosition(this.publishRequestWindowPos[0], this.publishRequestWindowPos[1]);
 
         // Create and show auxiliary windows
