@@ -74,25 +74,27 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
      */
     controller: null,
 
-    COMMON_DATA: {
-        title: 91,
-        abstract: 116,
+    COMMON_DATA: {        
+        title: ".md.title",
+        abstract: ".md.large",
         // Contact info
-        contact_name: 137,
-        contact_group: 139,
-        contact_phone: 147,
-        contact_mail: 163,
-        contact_country: 161,
+        contact_name: "tr[id^='gmd:pointOfContact'] tr[id^='gmd:individualName'] input.md",
+        contact_group: "tr[id^='gmd:pointOfContact'] tr[id^='gmd:organisationName'] input.md",
+        contact_phone: "tr[id^='gmd:pointOfContact'] tr[id^='gmd:voice'] input.md",
+        contact_mail: "tr[id^='gmd:pointOfContact'] tr[id^='gmd:electronicMailAddress'] input.md",
+        contact_country: "tr[id^='gmd:pointOfContact'] tr[id^='gmd:country'] input.md",
         // Author info
-        author_name: 11,
-        author_group: 13,
-        author_phone: 21,
-        author_mail: 37,
-        author_country: 35,
+        author_name: "tr[id^='gmd:contact'] tr[id^='gmd:individualName'] input.md",
+        author_group: "tr[id^='gmd:contact'] tr[id^='gmd:organisationName'] input.md",
+        author_phone: "tr[id^='gmd:contact'] tr[id^='gmd:voice'] input.md",
+        author_mail: "tr[id^='gmd:contact'] tr[id^='gmd:electronicMailAddress'] input.md",
+        author_country: "tr[id^='gmd:contact'] tr[id^='gmd:country'] input.md",
         // Online (download) info
         online_url: 249,
         // Online (get map) url
-        get_map_url: 269
+        get_map_url: "tr[id^='gmd:CI_OnlineResource']:last-child tr[id^='gmd:URL'] input",      
+        map_resource_name: "tr[id^='gmd:CI_OnlineResource']:last-child tr[id^='di_'] input",
+        map_resource_label: "tr[id^='gmd:CI_OnlineResource']:last-child tr[id^='gmd:description'] input"
     },
 
     /** private: method[initComponent] 
@@ -246,7 +248,7 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
 
     getFormValue: function(name) {
         //TODO: improve this function
-        return this.COMMON_DATA[name] ? $("#_" + this.COMMON_DATA[name]) : null;
+        return this.COMMON_DATA[name] ? $(this.COMMON_DATA[name]) : null;
     },
 
     setFormValue: function(name, value) {
