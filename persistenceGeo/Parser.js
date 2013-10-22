@@ -918,7 +918,8 @@ PersistenceGeo.Parser = Ext.extend(Ext.Component,{
 	        title: 'Save layer Form',
 	        fileUpload: true,	   
 			items: [],
-		    buttons: []
+		    buttons: [],
+		    waitTitle: ""
 		});
 		
 		tempForm.getForm().load({

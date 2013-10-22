@@ -114,6 +114,10 @@ PersistenceGeo.Context = Ext.extend(Ext.util.Observable, {
 
         PersistenceGeo.Context.superclass.constructor.call(this, config);
 
+        this.addEvents({
+            "layerremoved": true
+        });
+
         // get baseurl
         var baseUrl = this.defaultRestUrl;
         this.parser = new PersistenceGeo.Parser({
@@ -267,7 +271,11 @@ PersistenceGeo.Context = Ext.extend(Ext.util.Observable, {
     },
 
     removeLayer: function(layer) {
-        this.getParser().deleteLayerByLayerId(layer.layerID);
+
+        var self = this;
+        this.getParser().deleteLayerByLayerId(layer.layerID, function() {
+            self.fireEvent("layerremoved", self, layer);
+        });
         if ( !! layer.groupID && !! this.loadedLayers[layer.groupID]) {
             this.removeLayerFromGroup(layer, this.loadedLayers[layer.groupID]);
         } else if ( !! layer.userID && !! this.loadedLayers[layer.userID]) {

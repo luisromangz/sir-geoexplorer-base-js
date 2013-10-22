@@ -238,7 +238,7 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
                     new Ext.Action({
                         text: this.rejectButtonText,
                         handler: function() {
-                            this.submitCancel();
+                            this.submitRejection();
                         },
                         scope: this
                     }),
@@ -260,7 +260,7 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
         return this.cancelPublishRequestWindow;
     },
 
-    submitCancel: function() {
+    submitRejection: function() {
 
         this._proccessMask = new Ext.LoadMask(Ext.getBody());
         this._proccessMask.show();
@@ -289,9 +289,11 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
             } else {
                 var layer = this.jsonData.layerSelected.getLayer();
                 if (!layer.metadata) {
-                    layer.metadata = {};
+                    layer.metadata = {};              
                 }
-                //TODO REMOVE metadata this.jsonData.metadataUuid in GN
+              
+                var metadataUUID = layer.metadata.metadataUuid;
+
                 layer.metadata.metadataUuid = null;
                 console.log(jsonData.data.estado);
                 layer.metadata.json.properties[this.PUBLISH_REQUEST_DATA_PREFIX + 'ESTADO'] == jsonData.data.estado;                
@@ -300,6 +302,9 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
                 app.mapPanel.map.removeLayer(layer);
 
                 Ext.Msg.alert(this.rejectWindowTitleText, this.rejectionSuccessText);
+
+                // We remove the data from geonetwork.
+                this.removeMetadata(metadataUUID);
             }
         }
     },

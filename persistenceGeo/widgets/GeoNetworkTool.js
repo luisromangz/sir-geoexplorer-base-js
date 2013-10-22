@@ -109,6 +109,15 @@ PersistenceGeo.widgets.GeoNetworkTool = Ext.extend(gxp.plugins.Tool, {
             "remove": enforceOne
         });
 
+        // #90074 We handle persistent removal of layers to delete metadata.
+        app.persistenceGeoContext.on("layerremoved", this._onPersistenceGeoLayerRemoved, this);
+
+        // Context gets recreated with every login state change.
+        app.on("loginstatechange", function(){
+            app.persistenceGeoContext.on("layerremoved",this._onPersistenceGeoLayerRemoved, this);
+        },this);
+        
+
         return actions;
     },
 
@@ -142,7 +151,38 @@ PersistenceGeo.widgets.GeoNetworkTool = Ext.extend(gxp.plugins.Tool, {
 
         var disable = false;
 
-        this.launchAction.setDisabled(disable); 
+        this.launchAction.setDisabled(disable);
+    },
+
+     /** api: method[removeMetadata]
+     *  :param metadataUUID ``String`` the uuid of the metadata to remove.
+     *
+     *  Removes a metadata record from GeoNetwork given its id.
+     */
+    removeMetadata: function(metadataUUID) {
+        Ext.Ajax.request({
+            url: GN_URL + '/srv/eng/metadata.delete',
+            method: 'POST',
+            params: {
+                "uuid": metadataUUID
+            },
+            success: function() {
+                // We dont do anything
+                console.debug(String.format("Metadata '{0}' deleted successfuly from GeoNetwork!", metadataUUID));
+            },
+            failure: function() {
+                Ext.Msg.alert("Error!", "Couldn't delete metadata!");
+            },
+            scope: this
+        });
+    },
+
+    _onPersistenceGeoLayerRemoved: function(sender, layer) {
+        if(!!layer.metadata && !!layer.metadata.metadataUuid) {
+            this.removeMetadata(layer.metadata.metadataUuid);
+            // So we don't remove the metadata several times.
+            layer.metadata.metadataUuid = null;
+        }
     }
 
 });
