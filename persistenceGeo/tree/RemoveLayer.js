@@ -41,6 +41,7 @@ PersistenceGeo.tree.RemoveLayer = Ext.extend(gxp.plugins.RemoveLayer, {
     persistentDeletionConfirmQuestionText: 'The layer will be permanently removed from the server.<br><br>Do you really wish to continue?',
     persistentDeletionContinueBtnText: "Delete layer",
     persistentDeletionCancelBtnText: "Don't delete layer",
+    permanentDeletionSuccessText: "The layer was successfully removed from the server.",
 
     /** api: method[addActions]
      */
@@ -76,6 +77,16 @@ PersistenceGeo.tree.RemoveLayer = Ext.extend(gxp.plugins.RemoveLayer, {
             "add": enforceOne,
             "remove": enforceOne
         });
+
+        // We handle the removal in persistence geo to show a success message.
+        app.persistenceGeoContext.on("layerremoved",this._onPersistenceGeoLayerRemoved, this);
+
+        // Context gets recreated with every login state change.
+        app.on("loginstatechange", function(){
+            app.persistenceGeoContext.on("layerremoved",this._onPersistenceGeoLayerRemoved, this);
+        },this);
+
+        
 
         return actions;
     },
@@ -160,6 +171,10 @@ PersistenceGeo.tree.RemoveLayer = Ext.extend(gxp.plugins.RemoveLayer, {
         }
 
         this.target.mapPanel.layers.remove(record);
+    },
+
+    _onPersistenceGeoLayerRemoved : function(layer, sender) {
+        Ext.Msg.alert(this.persistentDeletionConfirmTitleText, this.permanentDeletionSuccessText);
     }
 
 });

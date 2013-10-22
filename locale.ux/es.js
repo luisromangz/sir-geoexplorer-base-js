@@ -768,7 +768,8 @@ GeoExt.Lang.add(
         persistentDeletionConfirmTitleText: 'Borrar Capa',
         persistentDeletionConfirmQuestionText: 'La capa se eliminará permanentemente del servidor.<br><br>¿Realmente desea borrar la capa?',
         persistentDeletionContinueBtnText: "Borrar capa",
-        persistentDeletionCancelBtnText: "No borrar capa"
+        persistentDeletionCancelBtnText: "No borrar capa",
+        permanentDeletionSuccessText: "La capa se eliminó con éxito del servidor."
     },
 
     'PersistenceGeo.tree.MakeLayerPublic.prototype':  {
