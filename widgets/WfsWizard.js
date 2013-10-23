@@ -66,7 +66,27 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
    	layout: {
         type: 'card'
     },
-   	title: 'Asistente WFS',
+   	title: "WFS Wizard",
+    loadErrorText: "An error happened while retrieving WFS layer info. Check the URL is valid.",
+    urlPromptText: "WFS Service's URL",
+    urlValidationText: 'Must be an URL similar to "http://www.ejemplo.com/service/wfs?request=GetCapabilities"',
+    step1TitleText: 'Service Data',
+    step1DescriptionText: 'This window allows to add a new WFS layer to the viewer.'
+                               + 'Please write the URL of the GetCapabilites document of the WFS service the layers must be retrieved from.'
+                               + 'In the next step you will be able to select which feature type to add from those offered by the service.',
+
+    layerLoadedText: "Layer '{0}' was added to the viewer.",
+    layerFieldsLoadErrorText: "There was an error retrieving the layer's fields.",
+    layerFieldsTitleText: "Layer '{0}' fields",
+    titleText: "Title",
+    nameText: "Name",
+    namespaceText: "Namespace",
+    descriptionText: "Description",
+    addText: 'Add',
+    fieldsText: 'Fields',
+    typeText: "Type",
+    optionalText: "Optional",
+
     returnProjection: Viewer.GEO_PROJECTION,
    	activeItem: 0,
        
@@ -79,15 +99,11 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
                    xtype: 'form',
                    itemId: 'step-1',
                    padding: 10,
-                   title: 'Datos del servicio',
-                   waitTitle: 'Por favor espere...',
+                   title: this.step1TitleText,                   
                    items: [
                        {
                           xtype: 'label',
-                          text: 'La presente ventana le permite añadir una nueva capa de tipo WFS al visor. '
-                               + 'Introduza a continuación la URL del documento Capabilities del servicio que desee añadir. '
-                               + 'En el paso siguiente podrá seleccionar que tipo de elemento de los ofrecidos por el servicio '
-                               + 'desea añadir al visor.',
+                          text: this.step1DescriptionText,
                           style: "display:block; padding-bottom: 10px"
                        },
                        {
@@ -96,9 +112,9 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
                            fieldLabel: 'URL',
                            itemId: 'urlTextField',
                            allowBlank: false,
-                           blankText: 'Introduzca la URL del servicio WFS',
+                           blankText: this.urlPromptText,
                            vtype: 'url',
-                           vtypeText: 'Este campo debe ser una URL en formato "http://www.ejemplo.com/service/wfs?request=GetCapabilities"',
+                           vtypeText: this.urlValidationText,
                            msgTarget: 'under'
                        }
                     ],
@@ -114,25 +130,6 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
                            }
                        }
                    ]
-               },
-               {
-                   xtype: 'panel',
-                   itemId: 'step-2',
-                   header:false,
-                   height: 171,
-                   layout : {
-                        type  : 'hbox',
-                        pack  : 'center',
-                        align : 'middle'
-                    },
-                    items: [{
-                       xtype: 'progress',
-                       itemId: 'progressBar',
-                       text: 'Obteniendo datos del servicio...',
-                       width: 300,
-                       height:20 
-                    }]
-                   
                }
            ],
            listeners: {
@@ -168,9 +165,9 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
         }
 
         if (form.isValid()) {
-    	   this.progressBar = this.items.get('step-2').getComponent('progressBar');
-            this.layout.setActiveItem('step-2');
-            this.progressBar.wait();
+    	      this._loadMask = new Ext.LoadMask(this.getEl());
+            this._loadMask.show();
+
             OpenLayers.Request.GET({
                 url: url,
                 callback: this.remoteCapabilitiesLoaded,
@@ -182,31 +179,26 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
         this.wfsCapabilitiesStore = new GeoExt.data.WFSCapabilitiesStore({
           returnProjection: this.returnProjection
         });
-            this.progressBar.updateProgress(100);
-
             var xmlContent = request.responseXML;
             if(!xmlContent) {
               xmlContent = request.responseText;
             }
-
 
             if (request.status == 200) {
                 try {
                     this.wfsCapabilitiesStore.on('load', this.wfsLoaded, this);
                     this.wfsCapabilitiesStore.loadData(xmlContent);
                 } catch (e) {
-                    Ext.Msg.alert("Error recuperando WFSCapabilities", "Se ha producido un error al recuperar "
-                    + "la información de las capas disponibles en el servidor. Compruebe que la URL introducida es correcta.");
-                    this.layout.setActiveItem('step-1');
+                    Ext.Msg.alert(this.title, this.loadErrorText);
                 }
             } else {
-                Ext.Msg.alert("Error recuperando WFSCapabilities", "Se ha producido un error al recuperar "
-                    + "la información de las capas disponibles en el servidor. Compruebe que la URL introducida es correcta.");
-                this.layout.setActiveItem('step-1');
+                Ext.Msg.alert(this.title, this.loadErrorText);
             }
+
+            this._loadMask.hide();
     },
 
-    wfsLoaded: function(store, records, options) {     
+    wfsLoaded: function(store, records, options) {
         this.store = store;
 
         // Add gridPanel to window
@@ -214,22 +206,22 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
             itemId: 'step-3',
             title: "Tipos de elementos disponibles",
             store: this.store,
+            autoExpandColumn: "name",
             columns: [
                 {
-                    header: "Titulo", dataIndex: "title", sortable: true, width: 250
+                    header: this.titleText, dataIndex: "title", sortable: true, width: 250
                 },
                 {
-                    header: "Nombre", dataIndex: "name", sortable: true
+                    id:"name", header: this.nameText, dataIndex: "name", sortable: true
                 },
                 {
-                    header: "Espacio de nombre", dataIndex: "namespace", sortable: true, width: 175
+                    header: this.namespaceText, dataIndex: "namespace", sortable: true, width: 175
                 },
                 {
-                    id: "description", header: "Descripción", dataIndex: "abstract"
+                    id: "description",  header:this.descriptionText, dataIndex: "abstract"
                 },
                 {
-                    header: 'Añadir',
-                    id: 'anadir',
+                    header: this.addText,
                     align: 'center',
                     renderer: function(value, meta, record, rowIndex) {
                         //return '<div class="vw-add-grid-button">Añadir</div>';
@@ -237,10 +229,9 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
                         return '';
                     },
                     width: 50
-                }, 
+                },
                 {
-                    header: 'Campos',
-                    id: 'verCampos',
+                    header: this.fieldsText,
                     align: 'center',
                     renderer: function(value, meta, record, rowIndex) {
                         //return '<div class="vw-viewdata-grid-button">Ver campos</div>';
@@ -274,7 +265,7 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
         if(columnIndex == 4) {
             var record = grid.getStore().getAt(rowIndex);
             this.fireEvent('featureTypeAdded', record);
-            Ext.Msg.alert("Capa añadida", "Se ha añadido la capa " + record.data.name + " al visor");
+            Ext.Msg.alert(this.title, String.format(this.layerLoadedText,record.data.name));
         } else if (columnIndex == 5) { // column view fields
             var record = grid.getStore().getAt(rowIndex);
             this.loadDescribeFeature(record);
@@ -283,6 +274,9 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
     loadDescribeFeature: function(record) {
         var dw = this.describeWindows.get(record.data.namespace + record.data.name);
         if (!dw) {
+
+            this._loadMask = new Ext.LoadMask(this.getEl());
+            this._loadMask.show();
             OpenLayers.Request.GET({
                 url: record.data.layer.protocol.url,
                 params: {
@@ -293,7 +287,7 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
                 },
                 callback: this.describeFeatureTypeLoaded,
                 scope: {
-                    self_: this, 
+                    self_: this,
                     name: record.data.name, 
                     namespace: record.data.namespace
                 }
@@ -303,12 +297,13 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
         }
     },
     describeFeatureTypeLoaded: function(request) {
+        this.self_._loadMask.hide();
         if (request.status == 200) {
                 try {
                     var attributeStore = new GeoExt.data.AttributeStore();;
                     attributeStore.loadData(request.responseXML);
                     var dfWindow = new Ext.Window({
-                        title: 'Campos de la capa "' + this.name + '"',
+                        title: String.format(this.self_.layerFieldsTitleText, this.name),
                         layout: 'fit',
                         closeAction: 'hide',
                         height: 250,
@@ -317,15 +312,16 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
                             {
                                 xtype: 'grid',
                                 store: attributeStore,
+                                autoExpandColumn: "type",
                                 columns: [
                                     {
-                                         header: "Nombre", dataIndex: "name", sortable: true
+                                         header: this.self_.nameText, dataIndex: "name", sortable: true
                                     },
                                     {
-                                         header: "Tipo", dataIndex: "type", sortable: true
+                                         id:"type", header: this.self_.typeText, dataIndex: "type", sortable: true
                                     },
                                     {
-                                         header: "Opcional", dataIndex: "nillable", sortable: true
+                                         header: this.self_.optionalText, dataIndex: "nillable", sortable: true
                                     }
                                 ]
                             }
@@ -334,12 +330,10 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
                     this.self_.describeWindows.add(this.namespace+this.name, dfWindow);
                     dfWindow.show();
                 } catch (e) {
-                    Ext.Msg.alert("Error recuperando campos de la capa", "Se ha producido un error al recuperar "
-                    + "la información de los campos de la capa.");
+                    Ext.Msg.alert(this.self_.title, this.self_.layerFieldsLoadErrorText);
                 }
             } else {
-                Ext.Msg.alert("Error recuperando campos de la capa", "Se ha producido un error al recuperar "
-                    + "la información de los campos de la capa.");
+                Ext.Msg.alert(this.self_.title, this.self_.layerFieldsLoadErrorText);
                 
             }
 
