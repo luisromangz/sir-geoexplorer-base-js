@@ -843,6 +843,29 @@ GeoExt.Lang.add(
 
     "Ext.LoadMask.prototype" : {
         msg: "Cargando..."
+    },
+
+    "Viewer.dialog.WfsWizard.prototype" : {
+        title: 'Asistente WFS',
+        loadErrorText: "Se ha producido un error al recuperar la información de las capas disponibles en el servidor. Compruebe que la URL introducida es correcta.",
+        urlPromptText: 'Introduzca la URL del servicio WFS',
+        urlValidationText: 'Este campo debe ser una URL en formato "http://www.ejemplo.com/service/wfs?request=GetCapabilities"',
+        step1TitleText: 'Datos del servicio',
+        step1DescriptionText: 'La presente ventana le permite añadir una nueva capa de tipo WFS al visor. '
+                                   + 'Introduza a continuación la URL del documento Capabilities del servicio que desee añadir. '
+                                   + 'En el paso siguiente podrá seleccionar que tipo de elemento de los ofrecidos por el servicio '
+                                   + 'desea añadir al visor.',
+        layerLoadedText: "Se ha añadido la capa '{0}' al visor",
+        layerFieldsLoadErrorText: "Se ha producido un error al recuperar la información de los campos de la capa.",
+        layerFieldsTitleText: "Campos de la capa '{0}'",
+        titleText: "Título",
+        nameText: "Nombre",
+        namespaceText: "Espacio de nombres",
+        descriptionText: "Descripción",
+        addText: 'Añadir',
+        fieldsText: 'Campos',
+        typeText: "Tipo",
+        optionalText: "Opcional",
     }
 
 });
