@@ -320,15 +320,17 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
             if (!jsonData.success) {
                 this.handleFailure(jsonData);
             } else {
+                // The publication request is removed from the toc.
                 var layer = this.jsonData.layerSelected.getLayer();
-                if (!layer.metadata) {
-                    layer.metadata = {};
-                }
-                layer.metadata.metadataUuid = this.jsonData.metadataUuid;
-
-                
                 app.mapPanel.map.removeLayer(layer);
 
+                var metadataToBeRemoved = jsonData.data;
+                if(this.requestData.activeAction == this.KNOWN_ACTIONS.UPDATE_LAYER && !!metadataToBeRemoved) {
+                    // We need to remove the old metadata that got replaced with the metadata we just make public.
+                    // We remove the data from geonetwork.
+                    this.removeMetadata(metadataToBeRemoved);
+                }
+                
 
                 this.makeMetadataPublic();
             }
