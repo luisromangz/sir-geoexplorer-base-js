@@ -265,7 +265,7 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
         if(columnIndex == 4) {
             var record = grid.getStore().getAt(rowIndex);
             this.fireEvent('featureTypeAdded', record);
-            Ext.Msg.alert(this.title, String.format(this.layerLoadedText,record.data.name));
+            Ext.Msg.alert(this.title, String.format(this.layerLoadedText,record.data.title));
         } else if (columnIndex == 5) { // column view fields
             var record = grid.getStore().getAt(rowIndex);
             this.loadDescribeFeature(record);
@@ -289,7 +289,8 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
                 scope: {
                     self_: this,
                     name: record.data.name, 
-                    namespace: record.data.namespace
+                    namespace: record.data.namespace,
+                    title: record.data.title
                 }
             });
         } else {
@@ -303,7 +304,7 @@ Viewer.dialog.WfsWizard = Ext.extend(Ext.Window, {
                     var attributeStore = new GeoExt.data.AttributeStore();;
                     attributeStore.loadData(request.responseXML);
                     var dfWindow = new Ext.Window({
-                        title: String.format(this.self_.layerFieldsTitleText, this.name),
+                        title: String.format(this.self_.layerFieldsTitleText, this.title),
                         layout: 'fit',
                         closeAction: 'hide',
                         height: 250,
