@@ -339,7 +339,7 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
 
                 // We set values in the form that depend on the published layer's name in geoserver
                 var editor = this.editorWindow.editorPanel;
-                editor.setFormValue("get_map_url", String.format("{0}/{1}/wms", geoserverBaseUrl, app.publicWorkspace));
+                editor.setFormValue("get_map_url", String.format("{0}/{1}/wms/reflect?layers={2}", geoserverBaseUrl, app.publicWorkspace, result.publishedLayer.name));
                 editor.setFormValue("resource_name", result.publishedLayer.nameWithoutWorkspace);
                 editor.setFormValue("resource_label", String.format("{0} ({1})",result.publishedLayer.layerTitle, this.wmsServiceText));
                 //editor.setFormValue("online_url", String.format("{0}/{1}/wms/kml?layers={2}",geoserverBaseUrl, app.publicWorkspace,result.publishedLayer.name));
