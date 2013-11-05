@@ -60,7 +60,6 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
      */
     defaultLanguage: 'spa',
 
-
     /** i18n **/
     toolText: "Publish",
     toolTooltipText: "Make a publish request",
@@ -550,8 +549,9 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
      */
     obtainCommonData: function() {
         // Init
-        var layerUrl = this.layerSelected.getLayer().url;
+        var layerUrl = String.format("{0}/{1}/wms",geoserverBaseUrl, app.publicWorkspace);
         var nameLayer;
+        var layerResource="";
         var layerPublishRequestId = null;
         var metadataId = null;
         if (this.isUpdate) {
@@ -666,6 +666,7 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
             utilityPanelCollapsed: this.isUpdate,
             panelVertical: !this.isUpdate,
             overrideExtent: !this.isUpdate,
+            ref:"editorPanel",
             xlinkOptions: {
                 CONTACT: true
             }
@@ -694,7 +695,7 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
         editorPanel.init(metadataId, create, group, child);
         editorPanel.doLayout(false);
 
-        this.editorWindow = editorWindow;
+        this.editorWindow = editorWindow;        
 
         return editorWindow;
 

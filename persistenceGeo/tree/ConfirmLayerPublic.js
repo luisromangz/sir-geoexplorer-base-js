@@ -60,6 +60,8 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
     confirmationTitleText: "Confirmation",
     confirmationQuestionText: "Do you really wish to pulish the layer with the current metadata?",
     layerPublishedButMetadataPrivateText: "The layer was published successfully, but there was an error making the metadata public.",
+    wmsServiceText: "WMS Service",
+    livePreviewText: "Live Preview",
 
     /** Save url for the layer publish request **/
     saveUrl: '/persistenceGeo/confirmPublishRequest',
@@ -324,13 +326,25 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
                 var layer = this.jsonData.layerSelected.getLayer();
                 app.mapPanel.map.removeLayer(layer);
 
-                var metadataToBeRemoved = jsonData.data;
+                var result = jsonData.data;
                 if(this.requestData.activeAction == this.KNOWN_ACTIONS.UPDATE_LAYER && !!metadataToBeRemoved) {
                     // We need to remove the old metadata that got replaced with the metadata we just make public.
                     // We remove the data from geonetwork.
-                    this.removeMetadata(metadataToBeRemoved);
+                    this.removeMetadata(result.metadataToBeRemoved);
                 }
-                
+
+                var newLayerResource = result.publishedLayer.nameWithoutWorkspace;
+                console.debug(String.format("Layer {0} was published in GeoServer", newLayerResource));
+
+
+                // We set values in the form that depend on the published layer's name in geoserver
+                var editor = this.editorWindow.editorPanel;
+                editor.setFormValue("get_map_url", String.format("{0}/{1}/wms", geoserverBaseUrl, app.publicWorkspace));
+                editor.setFormValue("resource_name", result.publishedLayer.nameWithoutWorkspace);
+                editor.setFormValue("resource_label", String.format("{0} ({1})",result.publishedLayer.layerTitle, this.wmsServiceText));
+                //editor.setFormValue("online_url", String.format("{0}/{1}/wms/kml?layers={2}",geoserverBaseUrl, app.publicWorkspace,result.publishedLayer.name));
+                editor.setFormValue("online_url", String.format("{0}/{1}/wms/reflect?layers={2}&format=application/openlayers",geoserverBaseUrl, app.publicWorkspace,result.publishedLayer.name));
+                editor.setFormValue("online_label", String.format("{0} ({1})",result.publishedLayer.layerTitle, this.livePreviewText));
 
                 this.makeMetadataPublic();
             }
@@ -343,6 +357,8 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
     },
     /** This function make the metadata public!! **/
     makeMetadataPublic: function(){
+        // We save the metadata
+        this.editorWindow.editorPanel.save();
 
         var firstUrl = GN_URL + '/srv/eng/metadata.select?id='+this.jsonData.metadataUuid + '&selected=add';
         var secondUrl = GN_URL + '/srv/eng/metadata.batch.admin.form';
