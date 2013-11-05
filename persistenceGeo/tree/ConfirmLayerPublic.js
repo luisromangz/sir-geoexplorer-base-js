@@ -362,7 +362,9 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
 
         var firstUrl = GN_URL + '/srv/eng/metadata.select?id='+this.jsonData.metadataUuid + '&selected=add';
         var secondUrl = GN_URL + '/srv/eng/metadata.batch.admin.form';
-        var thirdUrl = GN_URL + '/srv/eng/metadata.batch.update.privileges?&timeType=on&_1_0=on&_0_0=on&_-1_0=on';
+        // Permissions are encoded this way _GID_PERMISSIONID. Permission codes are 0: view, 1: download.
+        // See http://geonetwork-opensource.org/manuals/trunk/eng/developer/xml_services/metadata_xml_privileges.html
+        var thirdUrl = GN_URL + '/srv/eng/metadata.batch.update.privileges?&timeType=on&_1_0=on&_0_0=on&_-1_0=on&_1_1=on&_0_1=on&_-1_1=on';
 
         Ext.Ajax.request({
             url : firstUrl,
