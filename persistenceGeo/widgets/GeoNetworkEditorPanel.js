@@ -89,6 +89,9 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
         author_phone: "tr[id^='gmd:contact'] tr[id^='gmd:voice'] input.md",
         author_mail: "tr[id^='gmd:contact'] tr[id^='gmd:electronicMailAddress'] input.md",
         author_country: "tr[id^='gmd:contact'] tr[id^='gmd:country'] input.md",
+
+        language: "tr[id^='gmd:language'] select",
+
         // Online (download) info
         online_url: 249,
         // Online (get map) url

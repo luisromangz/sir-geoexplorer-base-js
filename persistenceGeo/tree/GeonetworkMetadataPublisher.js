@@ -48,6 +48,19 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
     /** Tool default icon **/
     toolIconCls: 'gxp-icon-savelayers',
 
+
+
+    /** api: config[defaultCountry]
+     *
+     */
+    defaultCountry: 'España',
+
+    /** api: config[defaultLanguage]
+     *
+     */
+    defaultLanguage: 'spa',
+
+
     /** i18n **/
     toolText: "Publish",
     toolTooltipText: "Make a publish request",
@@ -527,8 +540,6 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
         return true;
     },
 
-    defaultCountry: 'España',
-
     /** private: attribute[PUBLISH_REQUEST_DATA_PREFIX]
      *  @see com.emergya.ohiggins.dto.LayerPublishRequestDto#toPropMap()
      */
@@ -611,6 +622,8 @@ PersistenceGeo.tree.GeoNetworkMetadataPublisher = Ext.extend(PersistenceGeo.widg
                 author_phone: this.target.persistenceGeoContext.userInfo.telefono,
                 author_mail: this.target.persistenceGeoContext.userInfo.email,
                 author_country: this.defaultCountry,
+
+                language: this.defaultLanguage,
                 // Online (download) info
                 online_url: layerUrl,
                 // Online (get map) url
