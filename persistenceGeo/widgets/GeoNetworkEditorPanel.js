@@ -92,12 +92,13 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
 
         language: "tr[id^='gmd:language'] select",
 
-        // Online (download) info
-        online_url: 249,
+        // Online (link) info, the table is the second one in the container, although it seems to be the first.
+        online_url: "tr[id^='gmd:CI_OnlineResource']:nth-child(2) tr[id^='gmd:URL'] input",
+        online_label: "tr[id^='gmd:CI_OnlineResource']:nth-child(2) tr[id^='di_'] input",
         // Online (get map) url
         get_map_url: "tr[id^='gmd:CI_OnlineResource']:last-child tr[id^='gmd:URL'] input",      
-        map_resource_name: "tr[id^='gmd:CI_OnlineResource']:last-child tr[id^='di_'] input",
-        map_resource_label: "tr[id^='gmd:CI_OnlineResource']:last-child tr[id^='gmd:description'] input"
+        resource_name: "tr[id^='gmd:CI_OnlineResource']:last-child tr[id^='di_'] input",
+        resource_label: "tr[id^='gmd:CI_OnlineResource']:last-child tr[id^='gmd:description'] textarea"
     },
 
     /** private: method[initComponent] 
@@ -380,14 +381,15 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
      *
      * Saves the current editing sesion and marks the layer as published in SIR-AMIN.
      */
-    doPublication: function() {
-        PersistenceGeo.widgets.GeoNetworkEditorPanel.superclass.save.call(this);
+    doPublication: function() {       
         if (this.controller) {
             this.controller.fireEvent('editorpanelaction', 'doPublication', {
                 metadataUuid: this.relationPanel.metadataUuid,
                 metadataId: this.metadataId
             });
         }
+
+        //PersistenceGeo.widgets.GeoNetworkEditorPanel.superclass.save.call(this);
     },
 
 

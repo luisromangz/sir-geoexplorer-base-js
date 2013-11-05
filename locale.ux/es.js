@@ -804,7 +804,9 @@ GeoExt.Lang.add(
         confirmationTitleText: "Confirmación",
         confirmationQuestionText: "¿Realmente quiere hacer que la capa sea pública con los metadatos actuales?<br><br>Recuerde que no debe permitir la publicación de metadatos inválidos.",
         publicationTitleText:"Publicación de capa",
-        layerPublishedButMetadataPrivateText: "La capa fue publicada con éxito, pero hubo un error al publicar los metadatos, por lo que no estarán disponibles."
+        layerPublishedButMetadataPrivateText: "La capa fue publicada con éxito, pero hubo un error al publicar los metadatos, por lo que no estarán disponibles.",
+        wmsServiceText: "Servicio WMS",
+        livePreviewText: "Previsualización"
     },
 
     'PersistenceGeo.widgets.GeoNetworkEditorToolbar.prototype' :  {
