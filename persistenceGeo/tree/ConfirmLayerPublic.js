@@ -327,7 +327,7 @@ PersistenceGeo.tree.ConfirmLayerPublic = Ext.extend(PersistenceGeo.tree.GeoNetwo
                 app.mapPanel.map.removeLayer(layer);
 
                 var result = jsonData.data;
-                if(this.requestData.activeAction == this.KNOWN_ACTIONS.UPDATE_LAYER && !!metadataToBeRemoved) {
+                if(this.requestData.activeAction == this.KNOWN_ACTIONS.UPDATE_LAYER && !!result.metadataToBeRemoved) {
                     // We need to remove the old metadata that got replaced with the metadata we just make public.
                     // We remove the data from geonetwork.
                     this.removeMetadata(result.metadataToBeRemoved);
