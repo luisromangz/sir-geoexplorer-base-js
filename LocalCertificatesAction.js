@@ -227,7 +227,7 @@ gxp.plugins.LocalCertificatesAction = Ext.extend(gxp.plugins.Tool, {
 
     addLocalityLayer: function() {
          var map = Viewer.getMapPanel().map;
-        var layerName = 'gore:' + this.getLayerName();
+        var layerName = app.publicWorkspace + ':' + this.getLayerName();
         // We show the parcels layer in the map so the user can use that as reference.
         var baseLayer = new OpenLayers.Layer.WMS(
             'Propiedad Rural ' + this.getLocalityName(false),
@@ -275,7 +275,7 @@ gxp.plugins.LocalCertificatesAction = Ext.extend(gxp.plugins.Tool, {
             params: {
                 service: 'WFS',
                 request: 'GetFeature',
-                typeName: 'gore:' + this.getLayerName(),
+                typeName: app.publicWorkspace + ':' + this.getLayerName(),
                 outputFormat: 'json',
                 srsName: map.projection,
                 cql_filter: 'INTERSECTS(the_geom, POINT(' + point.lon + ' ' + point.lat + '))'
@@ -355,7 +355,7 @@ gxp.plugins.LocalCertificatesAction = Ext.extend(gxp.plugins.Tool, {
             params: {
                 service: 'WFS',
                 request: 'GetFeature',
-                typeName: 'gore:' + this.getLayerName('MANZANAS'),
+                typeName: app.publicWorkspace+ ':' + this.getLayerName('MANZANAS'),
                 outputFormat: 'json',
                 srsName: Viewer.getMapPanel().map.projection,
                 cql_filter: 'INTERSECTS(the_geom, POINT(' + ruralPropertyCentroid.x + ' ' + ruralPropertyCentroid.y + '))'
@@ -369,7 +369,7 @@ gxp.plugins.LocalCertificatesAction = Ext.extend(gxp.plugins.Tool, {
                     // Si la respuesta no es json válido hubo un fallo
                     Ext.MessageBox.updateProgress(1);
                     Ext.MessageBox.hide();
-                    Ext.MessageBox.alert('', this.errorText);
+                    Ext.MessageBox.alert(this.buttonText, this.errorText);
                     return;
                 }
 
@@ -392,7 +392,7 @@ gxp.plugins.LocalCertificatesAction = Ext.extend(gxp.plugins.Tool, {
                 // Si la respuesta no es json válido hubo un fallo
                 Ext.MessageBox.updateProgress(1);
                 Ext.MessageBox.hide();
-                Ext.MessageBox.alert('', this.errorText);
+                Ext.MessageBox.alert(this.buttonText, this.errorText);
             },
             scope: this
         });
@@ -405,7 +405,7 @@ gxp.plugins.LocalCertificatesAction = Ext.extend(gxp.plugins.Tool, {
             params: {
                 service: 'WFS',
                 request: 'GetFeature',
-                typeName: 'gore:' + this.getLayerName('ZONIFICACION'),
+                typeName: app.publicWorkspace + ':' + this.getLayerName('ZONIFICACION'),
                 outputFormat: 'json',
                 srsName: Viewer.getMapPanel().map.projection,
                 cql_filter: 'INTERSECTS(the_geom, POINT(' + ruralPropertyCentroid.x + ' ' + ruralPropertyCentroid.y + '))'
@@ -557,7 +557,7 @@ gxp.plugins.LocalCertificatesAction = Ext.extend(gxp.plugins.Tool, {
                 service: 'WMS',
                 version: '1.1.0',
                 request: 'GetMap',
-                layers: 'gore:' + this.getLayerName(),
+                layers: app.publicWorkspace + ':' + this.getLayerName(),
                 width: 800,
                 height: 600,
                 bbox: bounds,
@@ -571,7 +571,7 @@ gxp.plugins.LocalCertificatesAction = Ext.extend(gxp.plugins.Tool, {
                 service: 'WMS',
                 version: '1.1.0',
                 request: 'GetMap',
-                layers: 'gore:' + this.getLayerName(),
+                layers: app.publicWorkspace + ':' + this.getLayerName(),
                 width: 800,
                 height: 600,
                 bbox: bounds,
