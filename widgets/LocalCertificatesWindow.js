@@ -276,7 +276,7 @@ Viewer.dialog.LocalCertificatesWindow = Ext.extend(Ext.Window, {
             params: {
                 service: 'wfs',
                 request: 'GetFeature',
-                typeName: 'gore:' + this.action.getLayerName(),
+                typeName: app.publicWorkspace + ':' + this.action.getLayerName(),
                 outputFormat: 'json',
                 srsName: Viewer.getMapPanel().map.projection,
                 cql_filter: 'strToUpperCase(' + criteria + ") like '%" + filterText + "%'"
@@ -344,7 +344,7 @@ Viewer.dialog.LocalCertificatesWindow = Ext.extend(Ext.Window, {
     onViewButtonClicked: function() {
         var selection = this.grid.getSelectionModel().getSelected();
 
-        var layerName = 'gore:' + this.action.getLayerName();
+        var layerName = app.publicWorkspace + ':' + this.action.getLayerName();
 
         var map = Viewer.getMapPanel().map;
 
