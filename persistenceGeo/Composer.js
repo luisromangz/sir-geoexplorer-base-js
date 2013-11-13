@@ -52,6 +52,7 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
     saveErrorText: "Trouble saving: ",
     tableText: "Table",
     queryText: "Query",
+    informationToolbarTitleText: "Information",
     /* Edición */
     tooltipEdition: "Edition tools",
     // End i18n.
@@ -196,9 +197,9 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
             ptype: "gxp_pancontrol"
         }, {
             ptype: 'gxp_extendedtoolbar',
-            buttonText: 'Información',
-            menuText: 'Información',
-            tooltip: 'Información',
+            buttonText: this.informationToolbarTitleText,
+            menuText: this.informationToolbarTitleText,
+            tooltip: this.informationToolbarTitleText,
             iconCls: 'vw-icon-information-toolbar',
             toolbar: 'InformationToolbar',
             targetParent: this

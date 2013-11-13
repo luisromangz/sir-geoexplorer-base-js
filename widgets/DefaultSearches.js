@@ -31,6 +31,11 @@ Viewer.dialog.DefaultSearches = Ext.extend(Ext.Window, {
     LAYER_NAME: 'DefaultSearchLayer',
    
 
+    /** api: config[administrativeLimitsSearchEnabled]
+     *  ``Boolean`` If true, the administrative limits search will be shown.
+     */
+    administrativeLimitsSearchEnabled: true,
+
     mapProjection: null,
     
     /** i18n **/
@@ -43,6 +48,9 @@ Viewer.dialog.DefaultSearches = Ext.extend(Ext.Window, {
     coordinatesSectionLabel: 'Coordinates',
     searchBtnLabel: 'Search',
     adminstrativeLimitsSectionLabel: 'Administrative Limits',
+
+
+    
 
     constructor: function(config) {
 
@@ -281,12 +289,16 @@ Viewer.dialog.DefaultSearches = Ext.extend(Ext.Window, {
                         buttonDecimalClicked: this.onBtnDecimalClicked.createDelegate(this)
                     }
                 })
-            }, {
+            }]
+        };
+
+       if(this.administrativeLimitsSearchEnabled) {
+            c.items.push({
                 title: this.adminstrativeLimitsSectionLabel,
                 layout: 'fit',
                 defaults: {
                     bodyStyle: padding + border
-                },
+                },                
                 items: {
                     xtype: 'form',
                     defaults: {
@@ -300,9 +312,9 @@ Viewer.dialog.DefaultSearches = Ext.extend(Ext.Window, {
                         this.btnMunicipalitySearch
                     ]
                 }
-            }]
-        };
-
+            });    
+        }
+        
         this.add(c);
     }
 });
