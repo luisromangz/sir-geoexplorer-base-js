@@ -27,12 +27,17 @@
  */
 
 Viewer.widgets.InformationToolbar = Ext.extend(Ext.Toolbar, {
+
+    buttonText: 'Información',
+    menuText: 'Información',
+    tooltip: 'Información',
+    iconCls: 'vw-icon-information-toolbar',
 	
 	/** i18n **/
 	tooltipDefaultSearches: "Default Searches",
 	tooltipLengthMeasure: "Measure length selection or drawing a polyline",
 	tooltipAreaMeasure: "Measure area drawing or selecting a polygon",
-  tooltipPerimeterMeasure:"Measure perimeter drawing or selecting a polygon", 
+    tooltipPerimeterMeasure:"Measure perimeter drawing or selecting a polygon",
 	tooltipQueryLayer: "Query Layer",
 	tooltipPointInformation: "Point Information",
 	tooltipMetadataLayer: "Show metadata information",

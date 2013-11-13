@@ -390,7 +390,8 @@ GeoExt.Lang.add(
         passwordFieldText: 'Contrase\u00f1a',
         saveErrorText: 'Error al salvar: ',
         tableText: 'Datos',
-        queryText: 'Consultar'
+        queryText: 'Consultar',
+        informationToolbarTitleText: 'Información'
     },
 
     /* Certificados municipales */
