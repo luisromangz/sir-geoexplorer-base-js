@@ -50,6 +50,7 @@ Viewer.dialog.CreateBuffer = Ext.extend(Ext.Window, {
 
     waitText: "Please wait...",
     errorText: "There was an error, please try again in a few moments.",
+    titleText: "Create buffer",
     confirmCreateText: "A temporal layer will be created for the buffer. Do you wish to continue?",
     createBufferLayerText: "Create buffer layer",
     dontCreateBufferLayerText: "Don't create",
@@ -67,9 +68,9 @@ Viewer.dialog.CreateBuffer = Ext.extend(Ext.Window, {
 
         Viewer.dialog.CreateBuffer.superclass.constructor.call(this, Ext.apply({
             cls: 'vw_new_buffer_window',
-            title: 'Crear buffer',
+            title: this.titleText,
             width: 400,
-            height: 160,
+            height: 170,
             closeAction: 'hide',
             layout: 'fit'
         }, config));
@@ -105,7 +106,7 @@ Viewer.dialog.CreateBuffer = Ext.extend(Ext.Window, {
         }
 
         Ext.Msg.show({
-            "title": "",
+            "title": this.titleText,
             "msg": this.confirmCreateText,
             "buttons": {
                 "yes": this.createBufferLayerText,
@@ -123,7 +124,8 @@ Viewer.dialog.CreateBuffer = Ext.extend(Ext.Window, {
     },
 
     _doBufferLayerCreation: function() {
-        Ext.Msg.wait(this.waitText);
+        this.loadingMask = new Ext.LoadMask(Ext.getBody());
+        this.loadingMask.show();
         Ext.Ajax.request({
             method: "POST",
             url: '../../vectorialLayerController/newTempLayer',
@@ -136,9 +138,7 @@ Viewer.dialog.CreateBuffer = Ext.extend(Ext.Window, {
                 this._addBufferLayerToMap(response.responseText);
             },
             "failure": function(form, action) {
-                Ext.Msg.updateProgress(1);
-                Ext.Msg.hide();
-
+                this.loadingMask.hide();
                 Ext.Msg.alert('Error', this.errorText);
             },
             scope: this
@@ -177,9 +177,11 @@ Viewer.dialog.CreateBuffer = Ext.extend(Ext.Window, {
             }, 1000);
 
         } else if (resp && resp.success && resp.data && resp.data.status === "error") {
-            Ext.Msg.alert('', resp.data.message);
+            Ext.Msg.alert(this.titleText, resp.data.message);
+             this.loadingMask.hide();
         } else {
-            Ext.Msg.alert('', this.errorText);
+            Ext.Msg.alert(this.titleText, this.errorText);
+             this.loadingMask.hide();
         }
     },
 
@@ -216,15 +218,14 @@ Viewer.dialog.CreateBuffer = Ext.extend(Ext.Window, {
         features, {
             "prefix": prefix,
             "callback": function(response) {
-                Ext.Msg.updateProgress(1);
-                Ext.Msg.hide();
+                self.loadingMask.hide();
 
                 if (!response.success()) {
-                    Ext.Msg.alert("", self.errorText);
+                    Ext.Msg.alert(this.titleText, self.errorText);
                     return;
                 }
 
-                Ext.Msg.alert('', (new Ext.Template(self.bufferLayerCreatedText)).apply([layer.name]));
+                Ext.Msg.alert(this.titleText, (new Ext.Template(self.bufferLayerCreatedText)).apply([layer.name]));
 
                 self.bufferLayer.removeAllFeatures();
 
