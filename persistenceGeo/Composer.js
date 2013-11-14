@@ -982,10 +982,12 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
             // to prevent the layer showing under the default OSM base layer.
             // This happened because GMap's div was added asynchronously when the tiles load
             // by the layer itself. Fixes #86178.
-            google.maps.event.addListenerOnce(map.getLayersByName(app.baseLayers[2])[0].mapObject, 'tilesloaded', function() {
-                map.getLayersByName(app.baseLayers[2])[0].setVisibility(false);
-                map.getLayersByName(app.baseLayers[2])[0].setGMapVisibility(false);
-            });
+            if(google.maps) {
+                google.maps.event.addListenerOnce(map.getLayersByName(app.baseLayers[2])[0].mapObject, 'tilesloaded', function() {
+                    map.getLayersByName(app.baseLayers[2])[0].setVisibility(false);
+                    map.getLayersByName(app.baseLayers[2])[0].setGMapVisibility(false);
+                });
+            }
 
         });
 
