@@ -646,10 +646,7 @@ Ext.ux.form.DateTime = Ext.extend(Ext.form.Field, {
                 }
             // If we have an existance of T then this should be a valid date.
             if(!(this.dateValue instanceof Date) && t) {
-                if (d  instanceof Date)
-                    this.dateValue=d;
-                else
-                    this.initDateValue();
+                this.initDateValue();
                 // Since the time exist in "t" lets make sure it did not change
                 if(!(t instanceof Date)) {
                     t = Date.parseDate(t, this.tf.format);
