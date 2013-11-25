@@ -34,7 +34,7 @@ Viewer.controller.PlanificationTools = Ext.extend(Viewer.controller.Controller, 
     layersWindow: null,
     rulesWindow: null,
 
-    // We will increase the IPT layer id by this amount  so it don't collide with existing public layers in the TOC. HACKFIX for #83417.
+    // We will increase the IPT layer id by this amount  so it doesn't collide with existing public layers in the TOC. HACKFIX for #83417.
     magicNumber: 10000000,
 
     addedLayers: {
@@ -116,10 +116,11 @@ Viewer.controller.PlanificationTools = Ext.extend(Viewer.controller.Controller, 
         }
 
         if (checked === false) {
-            var layer = this.addedLayers.get(node.id);
+            var layerId = node.attributes.data.id+this.magicNumber;
+            var layer = this.addedLayers.get(layerId);
             if (layer !== null) {
                 this.removeLayersFromMap([layer]);
-                this.addedLayers.remove(node.id);
+                this.addedLayers.remove(layerId);
             }
         } else {
             this.addCheckedLayer(node.attributes.data);
