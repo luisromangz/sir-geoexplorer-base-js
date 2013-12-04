@@ -51,6 +51,8 @@ PersistenceGeo.widgets.UrlExporter = Ext.extend(gxp.plugins.Tool, {
     selectedLayer: null,
     actionIcon: 'gxp-icon-export-kml',
 
+    requireLogin: false,
+
     /**
      * private: method[init] :arg target: ``Object`` The object initializing
      * this plugin.
@@ -79,6 +81,9 @@ PersistenceGeo.widgets.UrlExporter = Ext.extend(gxp.plugins.Tool, {
         if (this.objectOwner === 'toolbar') {
             owner = app;
         }
+ 
+        owner.on('loginstatechange', this.enableOrDisableAction, this);
+
 
         owner.on('layerselectionchange', function(record) {
             if (record && record.data) {
@@ -174,7 +179,8 @@ PersistenceGeo.widgets.UrlExporter = Ext.extend(gxp.plugins.Tool, {
         }
     },
     isDownloadableLayer: function() {
-        return this.isLocalGeoserver(this.selectedLayer.url);
+        var userCanDownload = !this.requireLogin || !!app.persistenceGeoContext.userLogin;
+        return userCanDownload && this.isLocalGeoserver(this.selectedLayer.url);
     },
     enableOrDisableAction: function() {
         if (!this.selectedLayer) {
