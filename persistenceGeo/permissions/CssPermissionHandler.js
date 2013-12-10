@@ -39,7 +39,7 @@ Ext.namespace("PersistenceGeo.permissions");
 PersistenceGeo.permissions.CssPermissionHandler = Ext.extend(PersistenceGeo.permissions.PermissionHandler,{
 
     /** Exclude buttons hide!! **/
-    excludes: {"loginbutton":{}, "login":{}, "logout":{}},
+    excludes: {"loginbutton":{}, "login":{}, "logout":{}, "gxp-icon-export-shp":{}, "gxp-icon-export-kml":{}},
 
     /** Use to debug tools are hidden and displayed **/
     verbose: false,
