@@ -113,7 +113,7 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
         });
 
         this.grid.on("reconfigure", function(grid, store, colModel){
-
+            this.showLoadMask(false);
             if(colModel.config && colModel.config.length) {
                 this.btnZoomToResult.setDisabled(false);
                 this.btnPrint.setDisabled(false);
@@ -175,6 +175,10 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
                 this.loadMask = new Ext.LoadMask(this.getEl());
             }
             this.loadMask.show();
+            var l = this.loadMask;
+            setTimeout(function(){
+                l.hide();
+            },10000);
         }else if(!!this.loadMask && !!this.loadMask.hide){
             this.loadMask.hide();
         }
