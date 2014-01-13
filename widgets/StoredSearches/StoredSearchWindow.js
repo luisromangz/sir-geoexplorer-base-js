@@ -33,7 +33,6 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
     ptype: 'viewer_storedSearchWindow',
 
     controller: null,
-
     formFields: null,
 
     columns : {
@@ -56,7 +55,9 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
     },
 
     errorText: "Ocurrió un error.",
+    downloadWillBeginShortlyMsg: "La descarga del PDF generado comenzará en un instante, por favor espere...",
 
+    displayDownloadWillBeginShortlyMsg: false,
     
     /** api: config[closest]
      *  ``Boolean`` Find the zoom level that most closely fits the specified
@@ -344,15 +345,38 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
     },
 
     _printResults : function() {
+        var self = this;
+        this.showLoadMask(true);
+
+        var protocol = this.grid.store.proxy.protocol;
+        protocol.read({
+            maxFeatures: 1000000,
+            callback: function(response) {
+                if(response.error) {
+                    Ext.MessageBox.alert(this.controller.title, this.errorText);
+                    self.showLoadMask(false);
+                }
+
+                self._requestPDFDocument(response.features);
+            }
+
+        });
+
+    },
+
+    _requestPDFDocument : function(features) {
+
         var pageWidth = 215.9;
         var margin = 30;
         var avalaibleWidth = pageWidth - 2 * margin;
 
-        var items = this.createPDFDocument(margin, pageWidth, avalaibleWidth);
+
+        var items = this.createPDFDocument(features, margin, pageWidth, avalaibleWidth);
         if(!items) {
             return;
         }
 
+        // We create the phpPDF pdf creation request, including a footer and header for the document.
         var params = {
             size: "letter",
             margin: {
@@ -404,12 +428,11 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
             }
         };
 
-
-
-        this.showLoadMask(true);
-
+        
+        // We can use localhost in these urls because of using the proxy url.
         var url = app.proxy + "http://localhost/phpPDF/phpPDF.php";
 
+        // We create the pdf with the following request.
         Ext.Ajax.request({
             url: url,
             params: {
@@ -426,20 +449,27 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
                     Ext.MessageBox.alert(this.controller.title, this.errorText)
                 }
 
-                // We can use localhost this way because of the proxy
+                if(this.displayDownloadWillBeginShortlyMsg) {
+                    Ext.MessageBox.alert(this.controller.title, this.downloadWillBeginShortlyMsg);                    
+                }
+
+                // If the pdf was created successfully, we retrieve it from phpPDF stored documents
+                // using the provided identifier.               
                 app.downloadFile(url, {
                     params: Ext.encode({
                         downloadFile: result.downloadableFile,
                         outputFormat: "PDF"
                     })
                 });
+
+                
             },
             failure: function(response) {
                 this.showLoadMask(false);
-                Ext.MessageBox.alert(this.controller.title, this.errorText)
+                Ext.MessageBox.alert(this.controller.title, this.errorText);
             },
             scope: this
-        })
+        });
     },
 
     _latinize: function(text) {
@@ -448,21 +478,21 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
     },
 
 
-    createPDFDocument: function(margin, pageWidth, avalaibleWidth) {
+    createPDFDocument: function(features, margin, pageWidth, avalaibleWidth) {
         //We generate an XTemplate here by using 2 intermediary XTemplates - one to create the header,
         //the other to create the body (see the escaped {} below)
         var columns = this.grid.getColumnModel().config;
 
         if(!columns || !columns.length ) {
-            Ext.Msg.alert("","Por favor, realice una búsqueda primero.");
+            Ext.Msg.alert(this.controller.title,"Por favor, realice una búsqueda primero.");
             return false;
         }
 
         
         //build a useable array of store data for the XTemplate
         var data = [];
-        this.grid.store.data.each(function(item) {
-          var convertedData = [];
+        Ext.each(features, function(item) {
+          var convertedEntry = [];
 
           //apply renderers from column model
           for (var key in item.data) {
@@ -470,12 +500,12 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
             
             Ext.each(columns, function(column) {
               if (column.dataIndex == key) {
-                convertedData[key] = column.renderer ? column.renderer(value) : value;
+                convertedEntry[key] = column.renderer ? column.renderer(value) : value;
               }
             }, this);
           }
           
-          data.push(convertedData);
+          data.push(convertedEntry);
         });
 
         var featureColumns = this.columns[this.controller.featureType];
@@ -548,6 +578,11 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
     },
 
     createSearchFiltersText : function() {
+
+        if(!this._manager.filter.filters || !this._manager.filter.filters.length) {
+            return "";
+        }
+
         var textResult = "<p>";
         var localQueryDef = this._manager.filter.filters;
 
@@ -715,7 +750,13 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
     zoomToLayerExtent: function() {
         var map = this.target.target.mapPanel.map;
 
-        var extent = this._manager.getPageExtent(); // get extent from page
+        var extent;
+        try {
+            extent = this._manager.getPageExtent(); // get extent from page
+        } catch(e) {
+
+        }
+        
         if(!extent){
             var layer = this.controller.layer;
             if (OpenLayers.Layer.Vector) {

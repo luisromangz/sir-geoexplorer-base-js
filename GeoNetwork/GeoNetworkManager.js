@@ -397,7 +397,7 @@ GeoNetwork.loginGN = function(username, password){
     var loginUrl = GN_URL+ "/j_spring_security_check";
 
     Ext.Ajax.request({
-        url : loginUrl,// + '../../j_spring_security_check',
+        url : loginUrl,
         params : {
             username : username,
             password : password
@@ -429,7 +429,7 @@ GeoNetwork.loginGN = function(username, password){
     
 }
 
-GeoNetwork.logoutGN = function(){
+GeoNetwork.logoutGN = function(callback){
     Ext.Ajax.request({
         url : GN_URL + '/j_spring_security_logout',
         headers : {
@@ -439,6 +439,10 @@ GeoNetwork.logoutGN = function(){
             if(catalogue){
                 catalogue.fireEvent('afterLogout', 
                         catalogue, catalogue.identifiedUser);
+            }
+
+            if(callback) {
+                callback();
             }
         },
         failure : function() {
