@@ -494,11 +494,12 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
                 fixedZoomLevel: 2,
                 layers: [new OpenLayers.Layer.WMS(
                         "OpenLayers WMS",
-                        "http://vmap0.tiles.osgeo.org/wms/vmap0", {
-                        layers: "basic"
+                        //"http://vmap0.tiles.osgeo.org/wms/vmap0"
+                        "http://129.206.228.72/cached/osm", {
+                        //layers: "basic"
+                        layers: "osm_auto:all"
                     })]
-            })
-            ,
+            }),
             new OpenLayers.Control.CustomMousePosition({
                 emptyString: '',
                 displayProjection: Viewer.GEO_PROJECTION,
