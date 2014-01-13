@@ -63,8 +63,7 @@ Viewer.controller.ProyectosSEAStoredSearch = Ext.extend(Viewer.controller.Stored
                 valueReader: this.AmbitoTerritorialStore, onChange: this.ambitoTerritorialHandler.createDelegate(this) },
             { property: 'REGION', label: 'Región', valueReader: this.RegionStore },
             { property: 'PROVINCIA', label: 'Provincia', valueReader: this.ProvinciaStore },
-            { property: 'COMUNA', label: 'Comuna', valueReader: this.ComunaStore },
-            { property: 'ESTADO', label: 'Estado', filters: ['=='], value: 'Aprobado', hidden: true }
+            { property: 'COMUNA', label: 'Comuna', valueReader: this.ComunaStore }
         ];
 
         this.initQueryDef();
