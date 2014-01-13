@@ -266,19 +266,36 @@ PersistenceGeo.widgets.GeoNetworkEditorPanel = Ext.extend(GeoNetwork.editor.Edit
     initWithController: function(controller) {
         this.controller = controller;
         var jsonData = controller.getJsonData();
+
         // overwrite form data
         for (var formParam in jsonData.formData) {
             this.setFormValue(formParam, jsonData.formData[formParam]);
         }
         // Handle extent
-        this.catalogue.extentMap.mapPanel.map.zoomToExtent(GeoNetwork.map.EXTENT);
+
+        var catalogue = this.catalogue;
+        catalogue.extentMap.mapPanel.map.zoomToExtent(GeoNetwork.map.EXTENT);
         if (this.overrideExtent && jsonData.layerSelected) {
+
+            var bounds;
+
             var layer = jsonData.layerSelected.getLayer();
             if (layer.boundCalculated) {
-                this.catalogue.extentMap.setBbox(layer.boundCalculated);
+                bounds = layer.boundCalculated;
             } else {
-                this.catalogue.extentMap.setBbox(GeoNetwork.map.EXTENT);
+                bounds = GeoNetwork.map.EXTENT;
             }
+
+
+
+            try{
+                catalogue.extentMap.setBbox(bounds);
+            } catch(e) {
+                setTimeout(function() {
+                    catalogue.extentMap.setBbox(bounds);
+                },200);
+            }
+           
             // TODO: Add a compatible layer
             //this.catalogue.extentMap.mapPanel.map.addLayer(layer);
         }
