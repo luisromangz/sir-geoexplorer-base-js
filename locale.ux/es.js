@@ -413,6 +413,11 @@ GeoExt.Lang.add(
     'Viewer.plugins.ChartWindowAction.prototype': {
         tooltip: 'Abre la ventana que muestra las Iniciativas de Inversi\u00f3n'
     },
+    
+    'Viewer.plugins.ChileIndicaChartWindowAction.prototype': {
+        tooltip: 'Abre la ventana que muestra las Iniciativas de Inversi\u00f3n'
+    },
+    
     /* Log in/out */
     //TODO
 
