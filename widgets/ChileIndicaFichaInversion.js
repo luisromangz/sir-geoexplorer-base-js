@@ -61,7 +61,7 @@ Viewer.plugins.ChileIndicaFichaInversion = Ext.extend(GeoExt.Popup, {
 		});
 
 		this.item2 = new Ext.Panel({
-			title: 'Aprobación de Fecursos Financieros',
+			title: 'Aprobación de Recursos Financieros',
 			autoScroll: true,
 			cls: 'item labelsInFinancingSources'
 		});
