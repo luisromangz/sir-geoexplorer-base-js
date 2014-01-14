@@ -487,27 +487,6 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
         this._applyZoomBoxFix();
     },
 
-    getAditionalControls: function(){
-        return [
-            new OpenLayers.Control.CustomOverviewMap({
-                viewFixed: true,
-                fixedZoomLevel: 2,
-                layers: [new OpenLayers.Layer.WMS(
-                        "OpenLayers WMS",
-                        //"http://vmap0.tiles.osgeo.org/wms/vmap0"
-                        "http://129.206.228.72/cached/osm", {
-                        //layers: "basic"
-                        layers: "osm_auto:all"
-                    })]
-            }),
-            new OpenLayers.Control.CustomMousePosition({
-                emptyString: '',
-                displayProjection: Viewer.GEO_PROJECTION,
-                utmDisplayProjection: Viewer.UTM_PROJECTION
-            })
-        ];
-    },
-
     /** private: method[authenticate]
      * Show the login dialog for the user to login. Delegated to this.loginWindow.
      */
@@ -543,11 +522,6 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
      */
     logout: function() {
         this.loginWindow.logout();
-    },
-
-    // Delegated to this.loginWindow.
-    closePersistenceGeoContext: function (){
-        this.loginWindow.closePersistenceGeoContext();
     },
 
     // Delegated to this.loginWindow.
