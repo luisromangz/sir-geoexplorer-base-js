@@ -99,7 +99,7 @@ Viewer.plugins.ChileIndicaFichaInversion = Ext.extend(GeoExt.Popup, {
 		var etapa = this.feature.attributes.etapa;		
 		var anyo = this.feature.attributes.anyo;
 
-		Ext.Msg.wait(this.waitText);
+		Ext.Msg.wait(this.waitText, this.title);
 
 		Ext.Ajax.request({
 			url: this.baseUrl + "/fichaPopup",
@@ -145,7 +145,7 @@ Viewer.plugins.ChileIndicaFichaInversion = Ext.extend(GeoExt.Popup, {
 				Ext.Msg.updateProgress(1),
 				Ext.Msg.hide();
 
-				Ext.Msg.alert("", this.errorText);
+				Ext.Msg.alert(this.title, this.errorText);
 			}
 		});
 
