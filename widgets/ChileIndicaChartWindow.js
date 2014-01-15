@@ -132,7 +132,7 @@ Viewer.dialog.ChileIndicaChartWindow = Ext
                 }
             },
             _onShow: function() {
-                this._doChartsCreation();
+                //this._doChartsCreation();
             },
 
             onHide: function() {},
@@ -306,6 +306,10 @@ Viewer.dialog.ChileIndicaChartWindow = Ext
                                 projectCombo.fireEvent('select',
                                     projectCombo, records[0], 0);
                             }
+
+
+                            // We draw the chart for the first time here.
+                            this._doChartsCreation();
                         },
                         scope: this
                     }
@@ -354,8 +358,7 @@ Viewer.dialog.ChileIndicaChartWindow = Ext
 
                 var yearsStore = this._createYearStore();
                 var lineStore = this._createLineStore();
-                var nivelTerritorialStore = this
-                    ._createAreaLevelStore();
+                var nivelTerritorialStore = this._createAreaLevelStore();
                 var agruparPorStore = this._createGroupingStore();
 
                 return {
@@ -574,7 +577,7 @@ Viewer.dialog.ChileIndicaChartWindow = Ext
                         url: this.baseUrl + '/getItemsPresupuestarios'
                     }),
                     remotSort: true,
-                    autoLoad: false,
+                    autoLoad: true,
                     listeners: {
                         load: function(store, records, options) {
 
@@ -676,8 +679,6 @@ Viewer.dialog.ChileIndicaChartWindow = Ext
                 var baseUrl = this.baseUrl;
 
                 investmentLayer.removeAllFeatures();
-
-                
 
                 var featureCollection = {
                     type: 'FeatureCollection',
@@ -822,7 +823,6 @@ Viewer.dialog.ChileIndicaChartWindow = Ext
                     this.selectControl = selector;
                     this.map.addLayer(investmentLayer);
                     this.map.addControl(selector);
-
                 } else {
                     investmentLayer = investmentLayers[0];
                 }
