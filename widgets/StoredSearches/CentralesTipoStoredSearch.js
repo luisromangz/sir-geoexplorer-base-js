@@ -30,7 +30,7 @@ Viewer.controller.CentralesTipoStoredSearch = Ext.extend(Viewer.controller.Store
 
     featureType: 'CENTRALES',
     
-    title: 'Tipos de Centrales Generadoras.',
+    title: 'Tipos de Centrales Generadoras',
 
     constructor: function(config) {
 

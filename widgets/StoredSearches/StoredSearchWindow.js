@@ -264,6 +264,7 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
 
         var formContainer = new Ext.FormPanel({
             labelWidth: 120,
+            padding: 10,
             buttons: [
                 this.btnZoomToResult = new Ext.Button({
                     text: 'Centrar',
