@@ -50,14 +50,15 @@ Viewer.controller.CentralesAmbitoStoredSearch = Ext.extend(Viewer.controller.Sto
 
         this.ComunaStore = this.createWPSJsonStore({
             featureType: this.featureType,
-            attributeName: 'COMUNA'
+            attributeName: 'COMUNA',
+            dependsOn: 'REGION'
         });
 
         this.formDef = [
             { local: true, property: 'AMBITO_TERRITORIAL', label: 'Ámbito Territorial',
                 valueReader: this.AmbitoTerritorialStore, onChange: this.ambitoTerritorialHandler.createDelegate(this) },
-            { property: 'REGION', label: 'Región', valueReader: this.RegionStore },
-            { property: 'COMUNA', label: 'Comuna', valueReader: this.ComunaStore }
+            { property: 'REGION', label: 'Región', valueReader: this.RegionStore, onChange: this.onRegionChanged.createDelegate(this)},
+            { property: 'COMUNA', label: 'Comuna', valueReader: this.ComunaStore}
         ];
 
         this.initQueryDef();
@@ -99,5 +100,10 @@ Viewer.controller.CentralesAmbitoStoredSearch = Ext.extend(Viewer.controller.Sto
             formFields['COMUNA'].setValue(null);
             this.queryDefIndex['COMUNA'].value = null;
         }
+    },
+
+    onRegionChanged: function(widget, store, value, formFields) {
+        formFields["COMUNA"].setValue(null);
+        formFields["COMUNA"].store.load();
     }
 });

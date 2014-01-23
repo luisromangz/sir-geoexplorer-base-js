@@ -50,13 +50,14 @@ Viewer.controller.CentralesPotenciaStoredSearch = Ext.extend(Viewer.controller.S
 
         this.ComunaStore = this.createWPSJsonStore({
             featureType: this.featureType,
-            attributeName: 'COMUNA'
+            attributeName: 'COMUNA',
+            dependsOn: "REGION"
         });
 
         this.formDef = [
             { local: true, property: 'AMBITO_TERRITORIAL', label: 'Ámbito Territorial',
                 valueReader: this.AmbitoTerritorialStore, onChange: this.ambitoTerritorialHandler.createDelegate(this) },
-            { property: 'REGION', label: 'Región', valueReader: this.RegionStore },
+            { property: 'REGION', label: 'Región', valueReader: this.RegionStore, onChange: this.onRegionChanged.createDelegate(this) },
             { property: 'COMUNA', label: 'Comuna', valueReader: this.ComunaStore },
             { property: 'POT_BR_MW', label: 'Potencia Central (MW)', filters: this.defaultFilters },
         ];
@@ -82,9 +83,6 @@ Viewer.controller.CentralesPotenciaStoredSearch = Ext.extend(Viewer.controller.S
         } catch(e) {}
     },
 
-    //validateQuery: function() {
-    //},
-
     ambitoTerritorialHandler: function(widget, store, value, formFields) {
         formFields['REGION'].setDisabled(value < 1);
         formFields['COMUNA'].setDisabled(value < 2);
@@ -100,5 +98,10 @@ Viewer.controller.CentralesPotenciaStoredSearch = Ext.extend(Viewer.controller.S
             formFields['COMUNA'].setValue(null);
             this.queryDefIndex['COMUNA'].value = null;
         }
+    },
+
+    onRegionChanged: function(widget, store, value, formFields) {
+        formFields["COMUNA"].setValue(null);
+        formFields["COMUNA"].store.load();
     }
 });

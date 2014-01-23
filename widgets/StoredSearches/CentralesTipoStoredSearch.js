@@ -50,19 +50,21 @@ Viewer.controller.CentralesTipoStoredSearch = Ext.extend(Viewer.controller.Store
 
         this.ComunaStore = this.createWPSJsonStore({
             featureType: this.featureType,
-            attributeName: 'COMUNA'
+            attributeName: 'COMUNA',
+            dependsOn: "REGION"
         });
 
         this.TipoStore = this.createWPSJsonStore({
             featureType: this.featureType,
-            attributeName: 'TIPO_CENT'
+            attributeName: 'TIPO_CENT',
+            dependsOn: ["REGION","COMUNA"]
         });
 
         this.formDef = [
             { local: true, property: 'AMBITO_TERRITORIAL', label: 'Ámbito Territorial',
                 valueReader: this.AmbitoTerritorialStore, onChange: this.ambitoTerritorialHandler.createDelegate(this) },
-            { property: 'REGION', label: 'Región', valueReader: this.RegionStore },
-            { property: 'COMUNA', label: 'Comuna', valueReader: this.ComunaStore },
+            { property: 'REGION', label: 'Región', valueReader: this.RegionStore, onChange: this.onRegionChanged.createDelegate(this)},
+            { property: 'COMUNA', label: 'Comuna', valueReader: this.ComunaStore, onChange: this.onComunaChanged.createDelegate(this) },
             { property: 'TIPO_CENT', label: 'Tipo de central', valueReader: this.TipoStore }
         ];
 
@@ -87,9 +89,6 @@ Viewer.controller.CentralesTipoStoredSearch = Ext.extend(Viewer.controller.Store
         } catch(e) {}
     },
 
-    //validateQuery: function() {
-    //},
-
     ambitoTerritorialHandler: function(widget, store, value, formFields) {
         formFields['REGION'].setDisabled(value < 1);
         formFields['COMUNA'].setDisabled(value < 2);
@@ -105,5 +104,20 @@ Viewer.controller.CentralesTipoStoredSearch = Ext.extend(Viewer.controller.Store
             formFields['COMUNA'].setValue(null);
             this.queryDefIndex['COMUNA'].value = null;
         }
+        
+        this.formFields['TIPO_CENT'].store.load();  
+    },
+    
+    onRegionChanged : function() {
+        this.formFields['COMUNA'].setValue(null);
+        this.formFields['COMUNA'].store.load();
+        this.formFields['TIPO_CENT'].setValue(null);
+        this.formFields['TIPO_CENT'].store.load();  
+    },
+
+    onComunaChanged: function() {
+        this.formFields['TIPO_CENT'].setValue(null);
+        this.formFields['TIPO_CENT'].store.load();  
     }
+   
 });

@@ -159,72 +159,6 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
             var xmlQuery = new Viewer.plugins.XmlQueryAdapter()
                 .parse(this.queryDef);
 
-            ////var wms = new OpenLayers.Layer.WMS('test',
-            ////    options.wfsServiceUrl,
-            ////    {
-            ////        layers: 'Proyectos_SEA'
-            ////    }
-            ////);
-
-            ////wms.visibility = false;
-            //////this.map.addLayers([wms]);
-
-            ////var FooRecord = GeoExt.data.LayerRecord.create({name: 'foo'});
-            ////var fooRecord = new FooRecord();
-            ////fooRecord.setLayer(wms);
-
-            //var featureManager = window.app.tools.featuremanager;
-            //featureManager.activate();
-
-            ////featureManager.featureStore = new gxp.data.WFSFeatureStore({
-            ////    url: options.wfsServiceUrl,
-            ////    featureType: this.featureType
-            ////});
-
-
-            //featureManager.featureStore = new gxp.data.WFSFeatureStore({
-            //    fields: [
-            //        { name: 'id', mapping: 'fid' },
-            //        'NOMBRE', 'COMUNA'
-            //    ],
-            //    proxy: {
-            //        url: options.wfsServiceUrl,
-            //        protocol: {
-            //            outputFormat: featureManager.format,
-            //            multi: featureManager.multi
-            //        }
-            //    },
-            //    maxFeatures: featureManager.maxFeatures,
-            //    layer: featureManager.featureLayer,
-            //    //ogcFilter: filter,
-            //    autoLoad: true,
-            //    autoSave: false,
-            //    featureType: this.featureType,
-            //    listeners: {
-            //        "beforewrite": function(store, action, rs, options) {
-            //            featureManager.fireEvent("beforesave", featureManager, store, options.params);
-            //        },
-            //        "write": function(store, action, result, res, rs) {
-            //            featureManager.redrawMatchingLayers(record);
-            //        },
-            //        "load": function(store, rs, options) {
-            //            featureManager.fireEvent("query", featureManager, store, featureManager.filter);
-            //        },
-            //        scope: featureManager
-            //    }
-            //}); 
-
-            ////featureManager.setLayer(fooRecord);
-            //featureManager.loadFeatures(xmlQuery, function(features) {
-            //    console.log(features);
-            //    //featureManager.setPage();
-            //    this.fireEvent('load', {});
-            //}, this);
-
-            //return;
-
-
-
             if (!this.validateQuery()) {
                 this.fireEvent('loadError', {
                     code: 400, // Bad request
@@ -262,7 +196,7 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
 
     createWPSJsonStore: function(options) {
 
-        var createWPSRequest = function(featureType, attributeName) {
+        var createWPSRequest = function(featureType, attributeName, filter) {
             var data = {
                 identifier: 'gs:Unique',
                 dataInputs: [{
@@ -272,7 +206,9 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
                             wfs: {
                                 version: '1.1.0',
                                 outputFormat: 'GML3',
-                                featureType: featureType
+                                featureType: featureType,
+                                filter: filter,
+                                sortBy: attributeName
                             }
                         },
                         method: 'POST',
@@ -307,6 +243,7 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
 
         var url = this.wfsServiceUrl;
 
+        var controller = this;
         return new Ext.data.JsonStore(Ext.apply({
             autoLoad: true,
             proxy: new Ext.data.HttpProxy({
@@ -316,16 +253,64 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
                 }
             }),
             listeners: {
-                beforeLoad: function(store, options) {
-                    options.params = createWPSRequest(featureType, attributeName);
+                beforeLoad: function(store, requestOptions) {
+                    var filter = null;
+                    if(!!options && !!options.dependsOn) {                        
+                        filter = controller.createFilter(options.dependsOn);                                               
+                    }
+                    requestOptions.params = createWPSRequest(featureType, attributeName, filter);
                 }
             },
             root: 'features',
             fields: [
                 { name: 'id' },
                 { name: 'text', mapping: 'properties.value' }
-            ]
+            ],
+            scope: this
         }, options));
+    },
+    
+    createFilter : function(fields) {
+        var filter = null;
+        if(Ext.isArray(fields)) {
+            var filters = [];
+            
+            for(var i=0; i< fields.length; i++) {
+                var fieldFilter = this.createFieldFilter(fields[i]);
+                if(fieldFilter) {
+                    filters.push(fieldFilter);
+                }
+            }
+            
+            if(filters.length) {
+                filter = new OpenLayers.Filter.Logical({
+                    filters: filters,
+                    type: "&&"
+                })
+            }
+        } else {
+            filter = this.createFieldFilter(fields);
+        }
+        
+        return filter;
+    },
+    
+    createFieldFilter : function(field) {       
+        if(!field || !this.formFields[field]) {
+            return null;
+        }
+        
+        var filter = null;        
+        var filterValue = this.formFields[field].getValue();
+        if(!!filterValue) {
+            filter = new OpenLayers.Filter.Comparison({
+                type: "==",
+                property: field,
+                value: filterValue
+            });
+        }
+        
+        return filter;
     }
 
 });
