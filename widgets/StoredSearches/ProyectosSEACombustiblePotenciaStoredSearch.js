@@ -50,19 +50,21 @@ Viewer.controller.ProyectosSEACombustiblePotenciaStoredSearch = Ext.extend(Viewe
 
         this.ComunaStore = this.createWPSJsonStore({
             featureType: this.featureType,
-            attributeName: 'COMUNA'
+            attributeName: 'COMUNA',
+            dependsOn: "REGION"
         });
 
         this.CombustibleStore = this.createWPSJsonStore({
             featureType: this.featureType,
-            attributeName: 'COMBUSTIBL'
+            attributeName: 'COMBUSTIBL',
+            dependsOn: ["REGION","COMUNA"]
         });
 
         this.formDef = [
             { local: true, property: 'AMBITO_TERRITORIAL', label: 'Ámbito Territorial',
                 valueReader: this.AmbitoTerritorialStore, onChange: this.ambitoTerritorialHandler.createDelegate(this) },
-            { property: 'REGION', label: 'Región', valueReader: this.RegionStore },
-            { property: 'COMUNA', label: 'Comuna', valueReader: this.ComunaStore },
+            { property: 'REGION', label: 'Región', valueReader: this.RegionStore, onChange: this.onRegionChanged.createDelegate(this) },
+            { property: 'COMUNA', label: 'Comuna', valueReader: this.ComunaStore, onChange: this.onComunaChanged.createDelegate(this) },
             { property: 'COMBUSTIBL', label: 'Tipo de combustible', valueReader: this.CombustibleStore },
             { property: 'POT_BR_MW', label: 'Potencia Central (MW)', filters: this.defaultFilters }
         ];
@@ -106,5 +108,19 @@ Viewer.controller.ProyectosSEACombustiblePotenciaStoredSearch = Ext.extend(Viewe
             formFields['COMUNA'].setValue(null);
             this.queryDefIndex['COMUNA'].value = null;
         }
+        
+        this.formFields['COMBUSTIBL'].store.load();
+    },
+
+    onRegionChanged: function() {
+        this.formFields['COMUNA'].setValue(null);
+        this.formFields['COMUNA'].store.load();
+        this.formFields['COMBUSTIBL'].setValue(null);
+        this.formFields['COMBUSTIBL'].store.load();
+    },
+    
+    onComunaChanged : function() {
+        this.formFields['COMBUSTIBL'].setValue(null);
+        this.formFields['COMBUSTIBL'].store.load();
     }
 });

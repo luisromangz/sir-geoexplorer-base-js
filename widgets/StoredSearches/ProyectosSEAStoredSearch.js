@@ -50,19 +50,21 @@ Viewer.controller.ProyectosSEAStoredSearch = Ext.extend(Viewer.controller.Stored
 
         this.ProvinciaStore = this.createWPSJsonStore({
             featureType: this.featureType,
-            attributeName: 'PROVINCIA'
+            attributeName: 'PROVINCIA',
+            dependsOn: "REGION"
         });
 
         this.ComunaStore = this.createWPSJsonStore({
             featureType: this.featureType,
-            attributeName: 'COMUNA'
+            attributeName: 'COMUNA',
+            dependsOn: "PROVINCIA"
         });
 
         this.formDef = [
             { local: true, property: 'AMBITO_TERRITORIAL', label: 'Ámbito Territorial',
                 valueReader: this.AmbitoTerritorialStore, onChange: this.ambitoTerritorialHandler.createDelegate(this) },
-            { property: 'REGION', label: 'Región', valueReader: this.RegionStore },
-            { property: 'PROVINCIA', label: 'Provincia', valueReader: this.ProvinciaStore },
+            { property: 'REGION', label: 'Región', valueReader: this.RegionStore, onChange: this.onRegionChanged.createDelegate(this) },
+            { property: 'PROVINCIA', label: 'Provincia', valueReader: this.ProvinciaStore, onChange: this.onProvinceChanged.createDelegate(this) },
             { property: 'COMUNA', label: 'Comuna', valueReader: this.ComunaStore }
         ];
 
@@ -112,5 +114,18 @@ Viewer.controller.ProyectosSEAStoredSearch = Ext.extend(Viewer.controller.Stored
             formFields['COMUNA'].setValue(null);
             this.queryDefIndex['COMUNA'].value = null;
         }
+    },
+
+    onProvinceChanged: function() {
+        this.formFields['COMUNA'].setValue(null);
+        this.formFields['COMUNA'].store.load();
+    },
+
+    onRegionChanged: function() {
+        this.formFields['PROVINCIA'].setValue(null);
+        this.formFields['PROVINCIA'].store.load();
+        this.formFields['COMUNA'].setValue(null);
+        this.formFields['COMUNA'].store.load();
     }
+
 });
