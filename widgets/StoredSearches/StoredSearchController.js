@@ -262,7 +262,7 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
 
     createWPSJsonStore: function(options) {
 
-        var createWPSRequest = function(featureType, attributeName) {
+        var createWPSRequest = function(featureType, attributeName, filter) {
             var data = {
                 identifier: 'gs:Unique',
                 dataInputs: [{
@@ -272,7 +272,9 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
                             wfs: {
                                 version: '1.1.0',
                                 outputFormat: 'GML3',
-                                featureType: featureType
+                                featureType: featureType,
+                                filter: filter,
+                                sortBy: attributeName
                             }
                         },
                         method: 'POST',
@@ -307,6 +309,7 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
 
         var url = this.wfsServiceUrl;
 
+        var controller = this;
         return new Ext.data.JsonStore(Ext.apply({
             autoLoad: true,
             proxy: new Ext.data.HttpProxy({
@@ -316,16 +319,64 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
                 }
             }),
             listeners: {
-                beforeLoad: function(store, options) {
-                    options.params = createWPSRequest(featureType, attributeName);
+                beforeLoad: function(store, requestOptions) {
+                    var filter = null;
+                    if(!!options && !!options.dependsOn) {                        
+                        filter = controller.createFilter(options.dependsOn);                                               
+                    }
+                    requestOptions.params = createWPSRequest(featureType, attributeName, filter);
                 }
             },
             root: 'features',
             fields: [
                 { name: 'id' },
                 { name: 'text', mapping: 'properties.value' }
-            ]
+            ],
+            scope: this
         }, options));
+    },
+    
+    createFilter : function(fields) {
+        var filter = null;
+        if(Ext.isArray(fields)) {
+            var filters = [];
+            
+            for(var i=0; i< fields.length; i++) {
+                var fieldFilter = this.createFieldFilter(fields[i]);
+                if(fieldFilter) {
+                    filters.push(fieldFilter);
+                }
+            }
+            
+            if(filters.length) {
+                filter = new OpenLayers.Filter.Logical({
+                    filters: filters,
+                    type: "&&"
+                })
+            }
+        } else {
+            filter = this.createFieldFilter(fields);
+        }
+        
+        return filter;
+    },
+    
+    createFieldFilter : function(field) {       
+        if(!field || !this.formFields[field]) {
+            return null;
+        }
+        
+        var filter = null;        
+        var filterValue = this.formFields[field].getValue();
+        if(!!filterValue) {
+            filter = new OpenLayers.Filter.Comparison({
+                type: "==",
+                property: field,
+                value: filterValue
+            });
+        }
+        
+        return filter;
     }
 
 });
