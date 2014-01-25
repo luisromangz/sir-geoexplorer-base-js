@@ -111,6 +111,7 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
     },
 
     onShow: function() {
+        this.clearForm();
     },
 
     onHide: function() {
@@ -120,7 +121,12 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
         try {
             if(!!this.formFields){
                 for (var key in this.formFields) {
-                    this.formFields[key].setValue();
+                    var formField = this.formFields[key];
+                    formField.setValue();
+                    if(!!formField.store && formField.store.proxy) {
+                        // We reload remote stores.
+                        formField.store.load();
+                    }
                 }
             }
             if(!!this.layer){
