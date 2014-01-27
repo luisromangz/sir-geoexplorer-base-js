@@ -63,7 +63,7 @@ Viewer.plugins.XmlQueryAdapter = Ext.extend(Ext.util.Observable, {
         for (var i=0, l=this.queryDef.length; i<l; i++) {
             var queryItem = this.queryDef[i];
             if (!queryItem || queryItem.value == '') {
-                continue
+                continue;
             }
             var condition = this.parseCondition(this.queryDef[i]);
             condition && conditions.filters.push(condition);
@@ -74,7 +74,8 @@ Viewer.plugins.XmlQueryAdapter = Ext.extend(Ext.util.Observable, {
 
     parseCondition: function(condition) {
 
-        if (!condition.value || condition.value == '') {
+        var value = condition.value;
+        if (!value || value == '' || value == "Seleccione un valor...") {
             return null;
         }
 
