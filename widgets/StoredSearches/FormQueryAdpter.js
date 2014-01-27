@@ -30,6 +30,8 @@ Viewer.plugins.FormQueryAdapter = Ext.extend(Ext.util.Observable, {
     
     formDef: null,
 
+    valueNotFoundText :'Seleccione un valor...',
+
     constructor: function(config) {
         Viewer.plugins.FormQueryAdapter.superclass.constructor.call(this, config);
     },
@@ -123,7 +125,7 @@ Viewer.plugins.FormQueryAdapter = Ext.extend(Ext.util.Observable, {
                 store: condition.valueReader,
                 valueField: 'text',
                 displayField: 'text',
-                valueNotFoundText: 'Seleccione un valor...'
+                valueNotFoundText: this.valueNotFoundText
             };
         }
         return component;

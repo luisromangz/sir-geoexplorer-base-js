@@ -52,21 +52,14 @@ Viewer.plugins.XmlQueryAdapter = Ext.extend(Ext.util.Observable, {
         var conditions = new OpenLayers.Filter.Logical({
             type: OpenLayers.Filter.Logical.AND,
             filters: [
-                //new OpenLayers.Filter.Spatial({
-                //    type: OpenLayers.Filter.Spatial.BBOX,
-                //    value: new OpenLayers.Bounds(-180, -90, 180, 90),
-                //    projection: "EPSG:4326"
-                //})
             ]
         });
 
         for (var i=0, l=this.queryDef.length; i<l; i++) {
-            var queryItem = this.queryDef[i];
-            if (!queryItem || queryItem.value == '') {
-                continue;
-            }
             var condition = this.parseCondition(this.queryDef[i]);
-            condition && conditions.filters.push(condition);
+            if(condition) {
+                conditions.filters.push(condition);
+            }
         }
 
         return conditions;
@@ -75,7 +68,7 @@ Viewer.plugins.XmlQueryAdapter = Ext.extend(Ext.util.Observable, {
     parseCondition: function(condition) {
 
         var value = condition.value;
-        if (!value || value == '' || value == "Seleccione un valor...") {
+        if (!value || value == '' || value == Viewer.plugins.FormQueryAdapter.prototype.valueNotFoundText) {
             return null;
         }
 
