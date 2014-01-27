@@ -287,7 +287,7 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
                 this.btnClear = new Ext.Button({
                     text: 'Limpiar',
                     listeners: {
-                        click: function(){
+                        click: function(){                           
                             this.controller.clearForm();
                             this.onSearchButtonClicked();
                         },
@@ -316,6 +316,8 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
                     items: [
                         Ext.apply(condition.filters, {
                             listeners: {
+                                select:this._getFieldHandler(condition['onChange'], this.onFilterChanged.createDelegate(this)),
+                                change:this._getFieldHandler(condition['onChange'], this.onFilterChanged.createDelegate(this)),
                                 valid: this._getFieldHandler(condition['onChange'], this.onFilterChanged.createDelegate(this)),
                                 scope: this
                             }
@@ -340,7 +342,7 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
             }
         }     
 
-        this.add(formContainer);
+        this.form = this.add(formContainer);        
     },
 
     _printResults : function() {
@@ -739,12 +741,20 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
 
     onAfterRender: function() {
         this.formFields = {};
+        this.formFilters = {};
         var formFields = Viewer.getByClass('vw-stored-search-field');
         for (var i=0,l=formFields.items.length; i<l; i++) {
             var field = formFields.items[i];
-            this.formFields[field.name] = field;
+            if(field.displayField=="comparison") {
+                // A filter.
+                this.formFilters[field.name] = field;
+            } else {
+                this.formFields[field.name] = field;    
+            }
+            
         }
         this.controller.formFields = this.formFields;
+        this.controller.formFilters = this.formFilters;
         this.controller.onAfterRender();
     },
 

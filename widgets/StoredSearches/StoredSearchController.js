@@ -118,17 +118,27 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
     },
 
     clearForm: function(){
+        var key, formField;
         try {
             if(!!this.formFields){
-                for (var key in this.formFields) {
-                    var formField = this.formFields[key];
-                    formField.setValue(null)
+                for (key in this.formFields) {
+                    formField = this.formFields[key];
+                    formField.setValue(null);
                     if(!!formField.store && formField.store.proxy) {
                         // We reload remote stores.
                         formField.store.load();
                     }
                 }
             }
+            
+            if(!!this.formFilters){
+                for (key in this.formFilters) {
+                    formField = this.formFilters[key];
+                    formField.setValue(this.defaultFilters[0]);
+                    this.queryDefIndex[formField.name].comparison = formField.getValue();
+                }
+            }
+            
             if(!!this.layer){
                 this.layer.filter = null;
                 this.layer.refresh({force: true});
