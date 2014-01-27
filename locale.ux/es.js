@@ -853,6 +853,10 @@ GeoExt.Lang.add(
     "Ext.LoadMask.prototype" : {
         msg: "Cargando..."
     },
+    
+    "Ext.form.ComboBox.prototype" : {
+        loadingText: "Cargando..."  
+    },
 
     "Viewer.dialog.WfsWizard.prototype" : {
         title: 'Asistente WFS',
