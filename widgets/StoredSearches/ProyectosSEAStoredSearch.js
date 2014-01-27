@@ -57,7 +57,7 @@ Viewer.controller.ProyectosSEAStoredSearch = Ext.extend(Viewer.controller.Stored
         this.ComunaStore = this.createWPSJsonStore({
             featureType: this.featureType,
             attributeName: 'COMUNA',
-            dependsOn: "PROVINCIA"
+            dependsOn: ["PROVINCIA","REGION"]
         });
 
         this.formDef = [

@@ -122,7 +122,7 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
             if(!!this.formFields){
                 for (var key in this.formFields) {
                     var formField = this.formFields[key];
-                    formField.setValue();
+                    formField.setValue(null)
                     if(!!formField.store && formField.store.proxy) {
                         // We reload remote stores.
                         formField.store.load();
@@ -287,8 +287,9 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
                     filters.push(fieldFilter);
                 }
             }
-            
-            if(filters.length) {
+            if(filters.length==1) {
+                filter = filters[0];
+            } else if(filters.length>1) {
                 filter = new OpenLayers.Filter.Logical({
                     filters: filters,
                     type: "&&"
@@ -308,7 +309,7 @@ Viewer.controller.StoredSearchController = Ext.extend(Viewer.controller.Controll
         
         var filter = null;        
         var filterValue = this.formFields[field].getValue();
-        if(!!filterValue) {
+        if(!!filterValue && filterValue != this.formFields[field].valueNotFoundText) {
             filter = new OpenLayers.Filter.Comparison({
                 type: "==",
                 property: field,

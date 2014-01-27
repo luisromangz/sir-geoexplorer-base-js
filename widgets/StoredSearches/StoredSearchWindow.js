@@ -316,14 +316,13 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
                     items: [
                         Ext.apply(condition.filters, {
                             listeners: {
-                                select: this._getFieldHandler(condition['onChange'], this.onFilterChanged.createDelegate(this)),
+                                valid: this._getFieldHandler(condition['onChange'], this.onFilterChanged.createDelegate(this)),
                                 scope: this
                             }
                         }),
                         Ext.apply(condition.values, {
                             listeners: {
-                                select: this._getFieldHandler(condition['onChange'], this.onValueChanged.createDelegate(this)),
-                                keypress: this._getFieldHandler(condition['onChange'], this.onValueChanged.createDelegate(this)),
+                                valid: this._getFieldHandler(condition['onChange'], this.onValueChanged.createDelegate(this)),
                                 scope: this
                             }
                         })
@@ -333,9 +332,8 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
             } else if (condition.values) {
 
                 formContainer.add(Ext.apply(condition.values, {
-                    listeners: {
-                        select: this._getFieldHandler(condition['onChange'], this.onValueChanged.createDelegate(this)),
-                        keypress: this._getFieldHandler(condition['onChange'], this.onValueChanged.createDelegate(this)),
+                    listeners: {                  
+                        valid: this._getFieldHandler(condition['onChange'], this.onValueChanged.createDelegate(this)),
                         scope: this
                     }
                 }));
@@ -725,10 +723,16 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
     },
 
     _getFieldHandler: function(handler1, handler2) {
+        
+        
         return typeof(handler1) == 'function'
             ? function(widget, store, value) {
-                    handler2(widget, store, value);
-                    handler1(widget, store, value, this.formFields);
+                    var index = widget.selectedIndex;
+                    if(widget.getValue()==null || widget.getValue()==widget.valueNotFoundText) {
+                        index = -1;
+                    }
+                    handler2(widget, widget.store,index);
+                    handler1(widget, widget.store, index, this.formFields);
                 }.createDelegate(this)
             : handler2;
     },
