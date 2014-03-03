@@ -116,8 +116,7 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
         this.grid.on("reconfigure", function(grid, store, colModel){
             this.showLoadMask(false);
             if(colModel.config && colModel.config.length) {
-                this.btnZoomToResult.setDisabled(false);
-                this.btnPrint.setDisabled(false);
+               this.btnPrint.setDisabled(false);
             }
         },this);
 
@@ -204,14 +203,35 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
         var ogcFilter = xmlQueryAdapter.getParse();
 
         this.controller.layer.params['FILTER'] = xmlQueryAdapter.getWMSFilterParam();
-        this.controller.layer.redraw();
-
+        // #97339 We force the reload, as sometimes the changes aren't visible until we change zoom 
+        // or scroll the map.
+        this.controller.layer.redraw(true);
 
         this._manager.loadFeatures(ogcFilter, function (){
             this.grid.setStore(this._manager.featureStore);
             this.showGrid(true);
             this.showLoadMask(false);
         }, this);
+
+         // #97339: we make an additional WFS request containing all features to retrieve the bounding box.
+
+         if(this._manager.featureStore) {
+            this.btnZoomToResult.setDisabled(true);
+            var self = this;
+            this._manager.featureStore.proxy.protocol.read({
+                maxFeatures: 3000,
+                propertyNames:["NOMBRE"],
+                callback: function(result) {
+                    var resultBBOXGML = result.priv.responseXML.children[0].children[0].children[0];
+                    
+                    var bottomPoint = resultBBOXGML.children[0].innerHTML.split(" ");
+                    var topPoint = resultBBOXGML.children[1].innerHTML.split(" ");
+                    
+                    self._extentBBOX = new OpenLayers.Bounds(+bottomPoint[0],+bottomPoint[1], +topPoint[0], +topPoint[1]);
+                    self.btnZoomToResult.setDisabled(false);                    
+                }
+            });
+        }
     },
 
     showGrid: function(show){
@@ -766,30 +786,16 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
         var map = this.target.target.mapPanel.map;
 
         var extent;
-        try {
-            extent = this._manager.getPageExtent(); // get extent from page
-        } catch(e) {
-
-        }
         
-        if(!extent){
-            var layer = this.controller.layer;
-            if (OpenLayers.Layer.Vector) {
-                dataExtent = layer instanceof OpenLayers.Layer.Vector &&
-                    layer.getDataExtent();
-            }
-            extent =  layer.restrictedExtent || dataExtent || layer.maxExtent || map.maxExtent;
-        }
-        
-        if (extent) {
+        if (this._extentBBOX) {
             // respect map properties
             var restricted = map.restrictedExtent || map.maxExtent;
             if (restricted) {
                 extent = new OpenLayers.Bounds(
-                    Math.max(extent.left, restricted.left),
-                    Math.max(extent.bottom, restricted.bottom),
-                    Math.min(extent.right, restricted.right),
-                    Math.min(extent.top, restricted.top)
+                    Math.max(this._extentBBOX.left, restricted.left),
+                    Math.max(this._extentBBOX.bottom, restricted.bottom),
+                    Math.min(this._extentBBOX.right, restricted.right),
+                    Math.min(this._extentBBOX.top, restricted.top)
                 );
             }
             map.zoomToExtent(extent, this.closest);
