@@ -281,6 +281,48 @@ PersistenceGeo.tree.LayerManager = Ext.extend(gxp.plugins.LayerManager, {
              }
         }
         return ret;
+    },
+
+     /** private: method[configureLayerNode] 
+      * This method is duplicated from OpenLayer's LayerManager because we need
+      * to remove transparent:true from base params
+      */
+    configureLayerNode: function(loader, attr) {
+        gxp.plugins.LayerManager.superclass.configureLayerNode.apply(this, arguments);
+        var legendXType;
+        // add a WMS legend to each node created
+        if (OpenLayers.Layer.WMS && attr.layer instanceof OpenLayers.Layer.WMS) {
+            legendXType = "gx_wmslegend";
+        } else if (OpenLayers.Layer.Vector && attr.layer instanceof OpenLayers.Layer.Vector) {
+            legendXType = "gx_vectorlegend";
+        }
+        if (legendXType) {
+            var baseParams;
+            if (loader && loader.baseAttrs && loader.baseAttrs.baseParams) {
+                baseParams = loader.baseAttrs.baseParams;
+            }
+            Ext.apply(attr, {
+                component: {
+                    xtype: legendXType,
+                    // TODO these baseParams were only tested with GeoServer,
+                    // so maybe they should be configurable - and they are
+                    // only relevant for gx_wmslegend.
+                    hidden: !attr.layer.getVisibility(),
+                    baseParams: Ext.apply({
+                        /* #97489: This breaks arcgis legends:
+                        transparent: true,
+                        */
+                        format: "image/png",
+                        legend_options: "fontAntiAliasing:true;fontSize:11;fontName:Arial"
+                    }, baseParams),
+                    layerRecord: this.target.mapPanel.layers.getByLayer(attr.layer),
+                    showTitle: false,
+                    // custom class for css positioning
+                    // see tree-legend.html
+                    cls: "legend"
+                }
+            });
+        }
     }
 });
 
