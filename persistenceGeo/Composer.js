@@ -17,6 +17,18 @@
  */
 PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
 
+
+    /** api: config[channelsActionTarget]
+     *  ``String`` The target container for the channels tool button.
+     */
+    channelsActionTarget: "layers.tbar",
+
+    /** api: config[addAdditionalLayersActionTarget]
+     *  ``String`` The target container for the "load additional layers" tool button.
+     */
+
+    addAdditionalLayersActionTarget: "layers.bbar",
+
     /** api: config[cookieParamName]
      *  ``String`` The name of the cookie parameter to use for storing the
      *  logged in user.
@@ -162,7 +174,7 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
             actionTarget: ['layers.contextMenu']
         },{
             ptype: 'gxp_loadadditionallayers',
-            actionTarget: "layers.bbar",
+            actionTarget: this.addAdditionalLayersActionTarget,
             outputTarget: null,
             showButtonText: true
         }, {
@@ -239,7 +251,7 @@ PersistenceGeo.Composer = Ext.extend(GeoExplorer, {
             toggleGroup: "globalToggle"
         }, {
             ptype: "gxp_channeltools",
-            actionTarget: "layers.tbar",
+            actionTarget: this.channelsActionTarget,
             showButtonText: true,
             outputTarget: false,
             track: false,
