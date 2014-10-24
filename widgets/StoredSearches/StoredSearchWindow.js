@@ -222,10 +222,19 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
                 maxFeatures: 3000,
                 propertyNames:["NOMBRE"],
                 callback: function(result) {
-                    var resultBBOXGML = result.priv.responseXML.children[0].children[0].children[0];
+                    var xml = jQuery.parseXML(result.priv.responseText);
+
+                    if(!xml) {
+                        return;
+                    }
+
+                    var resultBBOXGML = xml.childNodes[0].childNodes[0].childNodes[0];
+                    if(!resultBBOXGML) {
+                        return;
+                    }
                     
-                    var bottomPoint = resultBBOXGML.children[0].innerHTML.split(" ");
-                    var topPoint = resultBBOXGML.children[1].innerHTML.split(" ");
+                    var bottomPoint = resultBBOXGML.childNodes[0].textContent.split(" ");
+                    var topPoint = resultBBOXGML.childNodes[1].textContent.split(" ");
                     
                     self._extentBBOX = new OpenLayers.Bounds(+bottomPoint[0],+bottomPoint[1], +topPoint[0], +topPoint[1]);
                     self.btnZoomToResult.setDisabled(false);                    
