@@ -407,6 +407,7 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
         }
 
         // We create the phpPDF pdf creation request, including a footer and header for the document.
+        var outputFile = this._latinize(this.controller.title);
         var params = {
             size: "letter",
             margin: {
@@ -418,7 +419,7 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
             title: this.controller.title,
             columns: 2,
             items: items,
-            outputFile: this._latinize(this.controller.title),
+            outputFile: outputFile,
             keepFile: true,
             header: {
                 margin: 10,
@@ -487,6 +488,7 @@ Viewer.dialog.StoredSearchWindow = Ext.extend(Ext.Window, {
                 // using the provided identifier.               
                 app.downloadFile(url, {
                     params: Ext.encode({
+                        outputFile: outputFile+".pdf",
                         downloadFile: result.downloadableFile,
                         outputFormat: "PDF"
                     })
